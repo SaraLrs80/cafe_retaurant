@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rimberio — <ui:insert name="pageTitle">Serveur</ui:insert></title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --orange:      #E8510A;
+            --orange-bg:   #FFF3EE;
+            --orange-dark: #C4420A;
+            --dark:        #1A1208;
+            --sidebar-bg:  #1C1407;
+            --muted:       #7A7060;
+            --border:      #E8E0D5;
+            --green:       #2D7D46;
+            --green-bg:    #EAF7EE;
+            --blue:        #1A6B9A;
+            --blue-bg:     #E8F4FB;
+            --red:         #C0392B;
+            --red-bg:      #FDEDEC;
+            --bg:          #F8F5F0;
+        }
+        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--dark); display:flex; min-height:100vh; }
+        .sidebar { width:240px; background:var(--sidebar-bg); color:white; display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+        .sidebar-logo { padding:20px 16px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:center; gap:10px; }
+        .sidebar-logo .logo-icon { width:38px; height:38px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .sidebar-logo .logo-text { font-size:.95rem; font-weight:700; }
+        .sidebar-logo .logo-sub  { font-size:.65rem; color:var(--orange); text-transform:uppercase; letter-spacing:1px; }
+        .sidebar-nav { flex:1; padding:16px 10px; overflow-y:auto; }
+        .nav-section { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,.35); padding:12px 8px 6px; }
+        .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; font-size:.82rem; color:rgba(255,255,255,.65); text-decoration:none; margin-bottom:2px; cursor:pointer; transition:all .15s; }
+        .nav-item:hover { background:rgba(255,255,255,.08); color:white; }
+        .nav-item.active { background:var(--orange); color:white; }
+        .sidebar-footer { padding:14px 16px; border-top:1px solid rgba(255,255,255,.08); }
+        .user-info { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+        .user-avatar { width:34px; height:34px; background:var(--orange); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; color:white; flex-shrink:0; }
+        .user-name  { font-size:.82rem; font-weight:600; }
+        .user-email { font-size:.68rem; color:rgba(255,255,255,.45); }
+        .logout-btn { display:flex; align-items:center; gap:8px; font-size:.8rem; color:rgba(255,255,255,.5); background:none; border:none; cursor:pointer; padding:4px 0; width:100%; }
+        .logout-btn:hover { color:white; }
+        .main { margin-left:240px; flex:1; min-height:100vh; }
+        .topbar { background:white; border-bottom:1px solid var(--border); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; }
+        .topbar-title { font-size:1rem; font-weight:600; color:var(--dark); }
+        .live-badge { display:flex; align-items:center; gap:6px; font-size:.75rem; color:var(--green); font-weight:500; }
+        .live-dot { width:7px; height:7px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+        .content { padding:24px 28px; }
+        .card { background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+        .card-head { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+        .card-head-title { font-size:.9rem; font-weight:600; }
+        .btn { padding:8px 16px; border-radius:8px; font-size:.82rem; font-weight:500; border:none; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
+        .btn-primary   { background:var(--orange); color:white; }
+        .btn-primary:hover { background:var(--orange-dark); }
+        .btn-secondary { background:#F0EBE3; color:var(--dark); }
+        .btn-secondary:hover { background:#E5DDD4; }
+        .btn-success   { background:var(--green); color:white; }
+        .btn-success:hover { background:#236338; }
+        .btn-danger    { background:var(--red); color:white; }
+        .btn-danger:hover { background:#a93226; }
+        .btn-info      { background:var(--blue); color:white; }
+        .btn-sm { padding:5px 10px; font-size:.76rem; }
+        .data-table { width:100%; border-collapse:collapse; }
+        .data-table th { background:#F8F5F0; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); padding:10px 16px; text-align:left; border-bottom:1px solid var(--border); }
+        .data-table td { padding:12px 16px; border-bottom:1px solid #F5F0EA; font-size:.84rem; vertical-align:middle; }
+        .data-table tr:last-child td { border-bottom:none; }
+        .data-table tr:hover td { background:#FDFAF7; }
+        .badge { display:inline-block; padding:3px 9px; border-radius:20px; font-size:.7rem; font-weight:600; }
+        .badge-success { background:var(--green-bg); color:var(--green); }
+        .badge-warning { background:#FFF8E1; color:#E65100; }
+        .badge-danger  { background:var(--red-bg); color:var(--red); }
+        .badge-info    { background:var(--blue-bg); color:var(--blue); }
+        .badge-muted   { background:#F0EBE3; color:var(--muted); }
+        .section-header { display:flex; align-items:center; justify-content:space-between; }
+        .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+        .stat-card { background:white; border-radius:12px; border:1px solid var(--border); padding:18px; display:flex; align-items:center; gap:14px; }
+        .stat-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .stat-icon.orange { background:var(--orange-bg); }
+        .stat-icon.green  { background:var(--green-bg); }
+        .stat-icon.blue   { background:var(--blue-bg); }
+        .stat-value { font-size:1.4rem; font-weight:700; }
+        .stat-label { font-size:.74rem; color:var(--muted); margin-top:2px; }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon" style="overflow:hidden; padding:0;">
+                <h:graphicImage library="images" name="Logo.jpeg" alt="Rimberio"
+                                style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;"/>
+            </div>
+            <div>
+                <div class="logo-text">Rimberio</div>
+                <div class="logo-sub">Serveur</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">Mon espace</div>
+            <h:link outcome="/pages/serveur/dashboard"
+                    styleClass="nav-item #{request.servletPath.contains('dashboard') ? 'active' : ''}">
+                Accueil
+            </h:link>
+
+            <div class="nav-section">Gestion</div>
+            <h:link outcome="/pages/serveur/reservations"
+                    styleClass="nav-item #{request.servletPath.contains('reservations') ? 'active' : ''}">
+                Réservations
+            </h:link>
+            <h:link outcome="/pages/serveur/commandes"
+                    styleClass="nav-item #{request.servletPath.contains('commandes') ? 'active' : ''}">
+                Commandes
+            </h:link>
+
+            <div class="nav-section">Consultation</div>
+            <h:link outcome="/pages/serveur/menu"
+                    styleClass="nav-item #{request.servletPath.contains('menu') ? 'active' : ''}">
+                Menu
+            </h:link>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <h:outputText value="#{authBean.currentUser.prenom.substring(0,1)}#{authBean.currentUser.nom.substring(0,1)}"/>
+                </div>
+                <div>
+                    <div class="user-name">
+                        <h:outputText value="#{authBean.currentUser.prenom} #{authBean.currentUser.nom}"/>
+                    </div>
+                    <div class="user-email">
+                        <h:outputText value="#{authBean.currentUser.email}"/>
+                    </div>
+                </div>
+            </div>
+            <h:form>
+                <h:commandButton value="Se déconnecter" action="#{authBean.logout}" styleClass="logout-btn"/>
+            </h:form>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="topbar">
+            <span class="topbar-title"><ui:insert name="pageTitle">Serveur</ui:insert></span>
+            <div class="live-badge"><div class="live-dot"></div> En direct</div>
+        </div>
+        <div class="content">
+            <ui:insert name="content"/>
+        </div>
+    </div>
+</h:body>
+</html>

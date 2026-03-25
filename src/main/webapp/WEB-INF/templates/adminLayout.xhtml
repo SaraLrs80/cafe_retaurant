@@ -1,0 +1,547 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rimberio — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap"
+          rel="stylesheet"/>
+    <style type="text/css">
+        :root {
+            --orange:        #E8470A;
+            --orange-light:  #F28C28;
+            --orange-bg:     #FFF3EC;
+            --green:         #2E7D32;
+            --green-light:   #4CAF50;
+            --green-bg:      #F1F8E9;
+            --sidebar-bg:    #1A1208;
+            --sidebar-w:     240px;
+            --topbar-h:      64px;
+            --cream:         #FDFAF5;
+            --white:         #FFFFFF;
+            --border:        #E8E0D0;
+            --muted:         #7A7060;
+            --dark:          #1A1208;
+            --text:          #2C2416;
+            --shadow-sm:     0 1px 4px rgba(26,18,8,.08);
+            --shadow-md:     0 4px 16px rgba(26,18,8,.10);
+            --radius:        12px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ══════════════════════════════
+           SIDEBAR
+        ══════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0; top: 0;
+            z-index: 100;
+            transition: transform .3s;
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .logo-circle {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+
+        .logo-texts { display: flex; flex-direction: column; }
+        .logo-title {
+            font-family: 'Playfair Display', serif;
+            font-size: .95rem; color: #fff;
+            line-height: 1.2;
+        }
+        .logo-role {
+            font-size: .65rem; color: var(--orange-light);
+            text-transform: uppercase; letter-spacing: .08em;
+            margin-top: 2px;
+        }
+
+        /* Navigation */
+        .nav-section {
+            padding: 20px 12px 8px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-label {
+            font-size: .62rem; font-weight: 600;
+            color: rgba(255,255,255,.3);
+            text-transform: uppercase; letter-spacing: .1em;
+            padding: 0 8px; margin-bottom: 6px; margin-top: 16px;
+        }
+        .nav-label:first-child { margin-top: 0; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            color: rgba(255,255,255,.6);
+            text-decoration: none;
+            font-size: .85rem; font-weight: 400;
+            transition: all .18s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,.07);
+            color: rgba(255,255,255,.9);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg,
+            rgba(232,71,10,.25) 0%,
+            rgba(242,140,40,.15) 100%);
+            color: var(--orange-light);
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-icon { color: var(--orange-light); }
+
+        .nav-icon {
+            width: 18px; height: 18px;
+            flex-shrink: 0;
+            opacity: .7;
+        }
+        .nav-item.active .nav-icon,
+        .nav-item:hover .nav-icon { opacity: 1; }
+
+        /* Bas sidebar */
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .user-card {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .avatar {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .8rem; font-weight: 700; color: white;
+            flex-shrink: 0;
+        }
+
+        .user-info { flex: 1; min-width: 0; }
+        .user-name {
+            font-size: .82rem; font-weight: 500;
+            color: rgba(255,255,255,.9);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .user-email {
+            font-size: .68rem; color: rgba(255,255,255,.4);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .btn-logout {
+            display: flex; align-items: center; gap: 8px;
+            width: 100%; padding: 9px 12px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 8px;
+            color: rgba(255,255,255,.5);
+            font-family: 'Inter', sans-serif;
+            font-size: .82rem; cursor: pointer;
+            transition: all .2s;
+            text-decoration: none;
+        }
+        .btn-logout:hover {
+            background: rgba(192,57,43,.15);
+            border-color: rgba(192,57,43,.3);
+            color: #E57373;
+        }
+
+        /* ══════════════════════════════
+           MAIN CONTENT
+        ══════════════════════════════ */
+        .main-content {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: var(--topbar-h);
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 32px;
+            position: sticky; top: 0; z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topbar-title {
+            font-size: 1.05rem; font-weight: 600;
+            color: var(--dark); flex: 1;
+        }
+
+        .topbar-right {
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .topbar-badge {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px;
+            background: var(--orange-bg);
+            border-radius: 20px;
+            font-size: .75rem; font-weight: 500;
+            color: var(--orange);
+        }
+
+        .badge-dot {
+            width: 6px; height: 6px;
+            background: var(--green-light);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .4; }
+        }
+
+        /* Page content */
+        .page-content {
+            padding: 28px 32px;
+            flex: 1;
+        }
+
+        /* ══════════════════════════════
+           COMPOSANTS PARTAGÉS
+        ══════════════════════════════ */
+
+        /* Stat cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex; align-items: center; gap: 16px;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 22px;
+        }
+        .stat-icon.orange { background: var(--orange-bg); }
+        .stat-icon.green  { background: var(--green-bg); }
+        .stat-icon.blue   { background: #EFF6FF; }
+        .stat-icon.purple { background: #F5F3FF; }
+
+        .stat-info { flex: 1; }
+        .stat-value {
+            font-size: 1.75rem; font-weight: 700;
+            color: var(--dark); line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: .78rem; color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* Section header */
+        .section-header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 1rem; font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Card */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .card-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            justify-content: space-between;
+        }
+        .card-head-title {
+            font-size: .9rem; font-weight: 600; color: var(--dark);
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            padding: 11px 16px;
+            text-align: left;
+            font-size: .72rem; font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            background: #FAFAF8;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: .85rem;
+            border-bottom: 1px solid #F5F0E8;
+            vertical-align: middle;
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: #FDFAF5; }
+
+        /* Badges statut */
+        .badge {
+            display: inline-flex; align-items: center;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: .72rem; font-weight: 600;
+            letter-spacing: .02em;
+        }
+        .badge-success { background: var(--green-bg);  color: var(--green); }
+        .badge-warning { background: #FFF8E1;           color: #F57F17; }
+        .badge-danger  { background: #FFEBEE;           color: #C62828; }
+        .badge-info    { background: #EFF6FF;           color: #1565C0; }
+        .badge-muted   { background: #F5F5F5;           color: #616161; }
+
+        /* Boutons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: .82rem; font-weight: 500;
+            cursor: pointer; border: none;
+            transition: all .2s; text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--orange); color: white;
+        }
+        .btn-primary:hover {
+            background: #C83D08;
+            box-shadow: 0 4px 12px rgba(232,71,10,.3);
+        }
+        .btn-secondary {
+            background: var(--white); color: var(--dark);
+            border: 1.5px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+        .btn-danger { background: #FFEBEE; color: #C62828; }
+        .btn-danger:hover { background: #FFCDD2; }
+        .btn-success { background: var(--green-bg); color: var(--green); }
+        .btn-success:hover { background: #C8E6C9; }
+        .btn-sm { padding: 5px 10px; font-size: .75rem; }
+
+        /* Grid 2 cols */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+    <ui:insert name="extraStyles"/>
+</h:head>
+<h:body>
+
+    <div class="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-circle" style="overflow:hidden; background:none; padding:0;">
+                <h:graphicImage library="images" name="Logo.jpeg" alt="Rimberio"
+                                style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;"/>
+            </div>
+            <div class="logo-texts">
+                <span class="logo-title">Rimberio</span>
+                <span class="logo-role">Administration</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-section">
+            <div class="nav-label">Principal</div>
+
+            <h:link outcome="/pages/admin/dashboard"
+                    styleClass="nav-item #{request.servletPath.contains('dashboard') ? 'active' : ''}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Dashboard
+            </h:link>
+
+            <div class="nav-label">Gestion</div>
+
+            <h:link outcome="/pages/admin/reservations"
+                    styleClass="nav-item #{request.servletPath.contains('reservations') ? 'active' : ''}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Réservations
+            </h:link>
+
+            <h:link outcome="/pages/admin/tables"
+                    styleClass="nav-item #{request.servletPath.contains('tables') ? 'active' : ''}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9h18M3 15h18M12 3v18"/>
+                </svg>
+                Tables
+            </h:link>
+
+            <h:link outcome="/pages/admin/commandes"
+                    styleClass="nav-item #{request.servletPath.contains('commandes') ? 'active' : ''}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="2"/>
+                    <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+                </svg>
+                Commandes
+            </h:link>
+
+            <h:link outcome="/pages/admin/menu"
+                    styleClass="nav-item #{request.servletPath.contains('menu') ? 'active' : ''}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+                    <path d="M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+                </svg>
+                Menu
+            </h:link>
+
+            <div class="nav-label">Système</div>
+
+            <h:link outcome="/pages/admin/utilisateurs"
+                    styleClass="nav-item #{request.servletPath.contains('utilisateurs') ? 'active' : ''}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Utilisateurs
+            </h:link>
+
+        </nav>
+
+        <!-- Footer sidebar -->
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">
+                    <h:outputText value="#{authBean.currentUser.prenom.substring(0,1)}#{authBean.currentUser.nom.substring(0,1)}"/>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">
+                        <h:outputText value="#{authBean.currentUser.prenom} #{authBean.currentUser.nom}"/>
+                    </div>
+                    <div class="user-email">
+                        <h:outputText value="#{authBean.currentUser.email}"/>
+                    </div>
+                </div>
+            </div>
+            <h:form>
+                <h:commandLink action="#{authBean.logout}" styleClass="btn-logout">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Se déconnecter
+                </h:commandLink>
+            </h:form>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+        <span class="topbar-title">
+            <ui:insert name="pageTitle">Dashboard</ui:insert>
+        </span>
+            <div class="topbar-right">
+                <div class="topbar-badge">
+                    <span class="badge-dot"></span>
+                    En direct
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu injecté par chaque page -->
+        <div class="page-content">
+            <ui:insert name="content"/>
+        </div>
+    </div>
+
+    <ui:insert name="scripts"/>
+
+</h:body>
+</html>
