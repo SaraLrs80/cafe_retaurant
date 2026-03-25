@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/adminLayout.xhtml">
+
+    <ui:define name="pageTitle">Dashboard</ui:define>
+
+    <ui:define name="content">
+
+        <!-- ══ Stat Cards ══ -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon orange"><span style="font-size:1.2rem;font-weight:700;color:#E8510A;">R</span></div>
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{dashboardBean.nbReservationsJour}"/>
+                    </div>
+                    <div class="stat-label">Réservations aujourd'hui</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon blue"><span style="font-size:1.2rem;font-weight:700;color:#1A6B9A;">C</span></div>
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{dashboardBean.nbCommandesEnCours}"/>
+                    </div>
+                    <div class="stat-label">Commandes en cours</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green"><span style="font-size:1.2rem;font-weight:700;color:#2D7D46;">CA</span></div>
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{dashboardBean.chiffreAffairesJour}">
+                            <f:convertNumber type="currency" currencySymbol="MAD "
+                                             minFractionDigits="0" maxFractionDigits="0"/>
+                        </h:outputText>
+                    </div>
+                    <div class="stat-label">Chiffre d'affaires</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon orange"><span style="font-size:1.2rem;font-weight:700;color:#E8510A;">T</span></div>
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{dashboardBean.nbTablesDisponibles}"/>
+                    </div>
+                    <div class="stat-label">Tables disponibles</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══ Ligne 2 : Réservations + Plat populaire ══ -->
+        <div class="grid-2" style="margin-bottom:20px;">
+
+            <!-- Réservations du jour -->
+            <div class="card">
+                <div class="card-head">
+                    <span class="card-head-title">Réservations du jour</span>
+                    <h:link outcome="/pages/admin/reservations" styleClass="btn btn-secondary btn-sm">
+                        Voir tout
+                    </h:link>
+                </div>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Heure</th>
+                        <th>Table</th>
+                        <th>Statut</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <ui:repeat value="#{dashboardBean.reservationsJour}" var="r">
+                        <tr>
+                            <td>
+                                <h:outputText value="#{r.client.prenom} #{r.client.nom}"/>
+                            </td>
+                            <td>
+                                <h:outputText value="#{r.heureReservation}"/>
+                            </td>
+                            <td>Table <h:outputText value="#{r.table.numeroTable}"/></td>
+                            <td>
+                                    <span class="badge
+                                        #{r.statut == 'CONFIRMEE' ? 'badge-success' :
+                                          r.statut == 'EN_ATTENTE' ? 'badge-warning' : 'badge-danger'}">
+                                        <h:outputText value="#{r.statut}"/>
+                                    </span>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                    <ui:fragment rendered="#{empty dashboardBean.reservationsJour}">
+                        <tr>
+                            <td colspan="4" style="text-align:center;color:#7A7060;padding:24px;">
+                                Aucune réservation aujourd'hui
+                            </td>
+                        </tr>
+                    </ui:fragment>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Commandes récentes + plat populaire -->
+            <div style="display:flex;flex-direction:column;gap:16px;">
+
+                <!-- Plat le plus commandé -->
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-head-title">Plat le plus commandé</span>
+                        <span class="badge badge-success">Top</span>
+                    </div>
+                    <div style="padding:20px;display:flex;align-items:center;gap:16px;">
+                        <div style="width:52px;height:52px;background:var(--orange-bg);
+                                    border-radius:12px;display:flex;align-items:center;
+                                    justify-content:center;font-size:26px;flex-shrink:0;">
+                            🍽
+                        </div>
+                        <div>
+                            <div style="font-weight:600;font-size:.95rem;color:var(--dark);">
+                                <h:outputText value="#{dashboardBean.platPopulaire}"/>
+                            </div>
+                            <div style="font-size:.78rem;color:var(--muted);margin-top:4px;">
+                                <h:outputText value="#{dashboardBean.nbFoisCommandePlatPopulaire}"/>
+                                fois commandé ce mois
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commandes récentes -->
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-head-title">Commandes récentes</span>
+                        <h:link outcome="/pages/admin/commandes" styleClass="btn btn-secondary btn-sm">
+                            Voir tout
+                        </h:link>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Type</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <ui:repeat value="#{dashboardBean.commandesRecentes}" var="c">
+                            <tr>
+                                <td style="font-weight:500;">#<h:outputText value="#{c.idCommande}"/></td>
+                                <td>
+                                        <span class="badge #{c.typeCommande == 'SUR_PLACE' ? 'badge-info' : 'badge-muted'}">
+                                            <h:outputText value="#{c.typeCommande == 'SUR_PLACE' ? 'Sur place' : 'En ligne'}"/>
+                                        </span>
+                                </td>
+                                <td>
+                                    <h:outputText value="#{c.montantTotal}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                    </h:outputText> MAD
+                                </td>
+                                <td>
+                                        <span class="badge
+                                            #{c.statut == 'PAYEE'     ? 'badge-success' :
+                                              c.statut == 'EN_COURS'  ? 'badge-warning' :
+                                              c.statut == 'ANNULEE'   ? 'badge-danger'  : 'badge-muted'}">
+                                            <h:outputText value="#{c.statut}"/>
+                                        </span>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                        <ui:fragment rendered="#{empty dashboardBean.commandesRecentes}">
+                            <tr>
+                                <td colspan="4" style="text-align:center;color:#7A7060;padding:20px;">
+                                    Aucune commande récente
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+</html>

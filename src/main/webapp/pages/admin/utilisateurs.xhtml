@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/adminLayout.xhtml">
+
+    <ui:define name="pageTitle">Gestion des Utilisateurs</ui:define>
+
+    <ui:define name="content">
+
+        <!-- ══ Header + Bouton ajouter ══ -->
+        <div class="section-header" style="margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Utilisateurs</h2>
+                <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">
+                    Gérez les comptes et les rôles
+                </p>
+            </div>
+            <h:form>
+                <h:commandButton value="+ Ajouter un utilisateur"
+                                 action="#{utilisateurBean.nouveauUtilisateur}"
+                                 styleClass="btn btn-primary"/>
+            </h:form>
+        </div>
+
+        <!-- ══ Filtres ══ -->
+        <div class="card" style="margin-bottom:20px;">
+            <div style="padding:14px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                <h:form style="display:flex;gap:12px;align-items:center;flex:1;">
+                    <input type="text" placeholder="Rechercher par nom ou email..."
+                           style="flex:1;padding:8px 14px;border:1.5px solid var(--border);
+                                  border-radius:8px;font-family:'Inter',sans-serif;
+                                  font-size:.85rem;outline:none;background:var(--cream);"/>
+                    <h:selectOneMenu styleClass="jsf-select"
+                                     style="padding:8px 14px;border:1.5px solid var(--border);
+                                            border-radius:8px;font-family:'Inter',sans-serif;
+                                            font-size:.85rem;outline:none;background:var(--cream);"
+                                     value="#{utilisateurBean.filtreRole}">
+                        <f:selectItem itemValue="" itemLabel="Tous les rôles"/>
+                        <f:selectItem itemValue="ADMIN"   itemLabel="Admin"/>
+                        <f:selectItem itemValue="SERVEUR" itemLabel="Serveur"/>
+                        <f:selectItem itemValue="CLIENT"  itemLabel="Client"/>
+                    </h:selectOneMenu>
+                    <h:commandButton value="Filtrer" action="#{utilisateurBean.filtrer}"
+                                     styleClass="btn btn-secondary"/>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- ══ Table utilisateurs ══ -->
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Téléphone</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat value="#{utilisateurBean.utilisateurs}" var="u">
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:34px;height:34px;border-radius:50%;
+                                                background:var(--orange-bg);
+                                                display:flex;align-items:center;justify-content:center;
+                                                font-size:.8rem;font-weight:700;color:var(--orange);
+                                                flex-shrink:0;">
+                                    <h:outputText value="#{u.prenom.substring(0,1)}#{u.nom.substring(0,1)}"/>
+                                </div>
+                                <div>
+                                    <div style="font-weight:500;font-size:.88rem;">
+                                        <h:outputText value="#{u.prenom} #{u.nom}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color:var(--muted);font-size:.83rem;">
+                            <h:outputText value="#{u.email}"/>
+                        </td>
+                        <td>
+                                <span class="badge
+                                    #{u.role.name() == 'ADMIN'   ? 'badge-danger' :
+                                      u.role.name() == 'SERVEUR' ? 'badge-warning' : 'badge-info'}">
+                                    <h:outputText value="#{u.role}"/>
+                                </span>
+                        </td>
+                        <td style="font-size:.83rem;">
+                            <h:outputText value="#{u.telephone != null ? u.telephone : '—'}"/>
+                        </td>
+                        <td>
+                                <span class="badge #{u.statutCompte ? 'badge-success' : 'badge-muted'}">
+                                    <h:outputText value="#{u.statutCompte ? 'Actif' : 'Désactivé'}"/>
+                                </span>
+                        </td>
+                        <td>
+                            <h:form style="display:flex;gap:6px;">
+                                <h:commandButton value="Modifier"
+                                                 action="#{utilisateurBean.editer(u)}"
+                                                 styleClass="btn btn-secondary btn-sm"/>
+                                <h:commandButton value="#{u.statutCompte ? 'Désactiver' : 'Activer'}"
+                                                 action="#{utilisateurBean.toggleStatut(u)}"
+                                                 styleClass="btn btn-sm #{u.statutCompte ? 'btn-danger' : 'btn-success'}"/>
+                            </h:form>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                <ui:fragment rendered="#{empty utilisateurBean.utilisateurs}">
+                    <tr>
+                        <td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">
+                            Aucun utilisateur trouvé
+                        </td>
+                    </tr>
+                </ui:fragment>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ══ Modal Ajouter/Modifier ══ -->
+        <ui:fragment rendered="#{utilisateurBean.showForm}">
+            <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);
+                        display:flex;align-items:center;justify-content:center;z-index:200;">
+                <div style="background:white;border-radius:16px;padding:32px;
+                             width:min(500px,90vw);box-shadow:0 24px 60px rgba(0,0,0,.2);">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;
+                                margin-bottom:20px;color:var(--dark);">
+                        <h:outputText value="#{utilisateurBean.modeEdition ? 'Modifier' : 'Ajouter'} un utilisateur"/>
+                    </h3>
+                    <h:form>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;color:var(--dark);
+                                              display:block;margin-bottom:5px;">Nom</label>
+                                <h:inputText value="#{utilisateurBean.selectedUser.nom}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                    border-radius:8px;font-family:'Inter',sans-serif;
+                                                    font-size:.85rem;outline:none;"
+                                             required="true"/>
+                            </div>
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;color:var(--dark);
+                                              display:block;margin-bottom:5px;">Prénom</label>
+                                <h:inputText value="#{utilisateurBean.selectedUser.prenom}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                    border-radius:8px;font-family:'Inter',sans-serif;
+                                                    font-size:.85rem;outline:none;"
+                                             required="true"/>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <label style="font-size:.78rem;font-weight:600;color:var(--dark);
+                                          display:block;margin-bottom:5px;">Email</label>
+                            <h:inputText value="#{utilisateurBean.selectedUser.email}"
+                                         style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                border-radius:8px;font-family:'Inter',sans-serif;
+                                                font-size:.85rem;outline:none;"
+                                         required="true"/>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;color:var(--dark);
+                                              display:block;margin-bottom:5px;">Téléphone</label>
+                                <h:inputText value="#{utilisateurBean.selectedUser.telephone}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                    border-radius:8px;font-family:'Inter',sans-serif;
+                                                    font-size:.85rem;outline:none;"/>
+                            </div>
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;color:var(--dark);
+                                              display:block;margin-bottom:5px;">Rôle</label>
+                                <h:selectOneMenu value="#{utilisateurBean.selectedUser.role}"
+                                                 style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                        border-radius:8px;font-family:'Inter',sans-serif;
+                                                        font-size:.85rem;outline:none;">
+                                    <f:selectItem itemValue="ADMIN"   itemLabel="Admin"/>
+                                    <f:selectItem itemValue="SERVEUR" itemLabel="Serveur"/>
+                                    <f:selectItem itemValue="CLIENT"  itemLabel="Client"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <ui:fragment rendered="#{!utilisateurBean.modeEdition}">
+                            <div style="margin-bottom:20px;">
+                                <label style="font-size:.78rem;font-weight:600;color:var(--dark);
+                                              display:block;margin-bottom:5px;">Mot de passe</label>
+                                <h:inputSecret value="#{utilisateurBean.motDePasse}"
+                                               style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                      border-radius:8px;font-family:'Inter',sans-serif;
+                                                      font-size:.85rem;outline:none;"
+                                               required="true"/>
+                            </div>
+                        </ui:fragment>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <h:commandButton value="Annuler"
+                                             action="#{utilisateurBean.annuler}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"/>
+                            <h:commandButton value="#{utilisateurBean.modeEdition ? 'Modifier' : 'Enregistrer'}"
+                                             action="#{utilisateurBean.sauvegarder}"
+                                             styleClass="btn btn-primary"/>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+
+    </ui:define>
+
+</ui:composition>
+</html>
