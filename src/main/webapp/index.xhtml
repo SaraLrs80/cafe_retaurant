@@ -1,0 +1,963 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      lang="fr">
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RIMBERIO — Gestion Intelligente de Votre Café &amp; Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=DM+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"> </script>
+    <h:outputStylesheet library="css" name="style.css" />
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --jaune:       #F6C453;
+            --orange:      #F28C28;
+            --orange-dark: #D9711A;
+            --vert:        #4CAF50;
+            --vert-dark:   #2E7D32;
+            --vert-light:  #E8F5E9;
+            --blanc:       #FFFFFF;
+            --creme:       #FFF8EE;
+            --noir:        #1A1208;
+            --gris:        #5C5442;
+            --gris-light:  #EDE8DD;
+            --gris-mid:    #9B9080;
+            --radius-sm:   10px;
+            --radius-md:   16px;
+            --radius-lg:   24px;
+            --shadow-sm:   0 2px 12px rgba(26,18,8,0.08);
+            --shadow-md:   0 6px 32px rgba(26,18,8,0.11);
+            --shadow-lg:   0 12px 60px rgba(26,18,8,0.14);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #FFFFFF;
+            color: #1A1208;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.22s ease;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn svg { width: 16px; height: 16px; stroke-width: 2.2px; flex-shrink: 0; }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #F28C28, #D9711A);
+            color: #fff;
+            box-shadow: 0 4px 18px rgba(242,140,40,0.35);
+        }
+        .btn-orange:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(242,140,40,0.45); color: #fff; }
+
+        .btn-outline-orange {
+            background: transparent;
+            border: 2px solid #F28C28;
+            color: #F28C28;
+        }
+        .btn-outline-orange:hover { background: #F28C28; color: #fff; transform: translateY(-1px); }
+
+        .btn-vert {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: #fff;
+            box-shadow: 0 4px 18px rgba(76,175,80,0.30);
+        }
+        .btn-vert:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(76,175,80,0.40); color: #fff; }
+
+        .btn-outline-vert {
+            background: transparent;
+            border: 2px solid #4CAF50;
+            color: #2E7D32;
+        }
+        .btn-outline-vert:hover { background: #4CAF50; color: #fff; }
+
+        .btn-lg { padding: 14px 32px; font-size: 0.97rem; border-radius: 16px; }
+
+        /* ── NAVBAR ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4%;
+            height: 70px;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(242,140,40,0.13);
+            box-shadow: 0 2px 24px rgba(26,18,8,0.07);
+            animation: navIn 0.5s ease both;
+        }
+
+        @keyframes navIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: none; opacity: 1; }
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 11px;
+            text-decoration: none; flex-shrink: 0;
+        }
+
+        .logo-img {
+            width: 44px; height: 44px; border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 6px 18px rgba(242,140,40,0.30);
+            flex-shrink: 0;
+        }
+
+        .logo-text-block { display: flex; flex-direction: column; line-height: 1.1; }
+
+        .logo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem; font-weight: 900;
+            color: #1A1208; letter-spacing: 1px;
+        }
+        .logo-name span { color: #F28C28; }
+
+        .logo-tagline {
+            font-size: 0.62rem; color: #9B9080;
+            font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase;
+        }
+
+        .nav-center {
+            display: flex; align-items: center; gap: 2px; list-style: none;
+        }
+
+        .nav-center li a {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.85rem; font-weight: 600; color: #5C5442;
+            padding: 6px 13px; border-radius: 8px;
+            transition: all 0.2s; text-decoration: none; white-space: nowrap;
+        }
+
+        .nav-center li a svg { width: 15px; height: 15px; stroke-width: 2.2px; flex-shrink: 0; }
+
+        .nav-center li a:hover { color: #F28C28; background: rgba(242,140,40,0.07); }
+        .nav-center li a.active { color: #F28C28; background: rgba(242,140,40,0.09); }
+
+        .nav-link-about {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.85rem; font-weight: 600; color: #5C5442;
+            padding: 6px 13px; border-radius: 8px;
+            transition: all 0.2s; text-decoration: none; white-space: nowrap;
+        }
+        .nav-link-about svg { width: 15px; height: 15px; stroke-width: 2.2px; flex-shrink: 0; }
+        .nav-link-about:hover, .nav-link-about.active { color: #F28C28; background: rgba(242,140,40,0.07); }
+
+        .nav-cta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .nav-divider { width: 1px; height: 28px; background: #EDE8DD; margin: 0 8px; flex-shrink: 0; }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(155deg, #FFF8EE 0%, #fff 50%, #FFF3E0 100%);
+            display: grid; grid-template-columns: 1fr 1fr;
+            align-items: center; gap: 48px;
+            padding: 110px 5% 70px;
+            position: relative; overflow: hidden;
+        }
+
+        .hero::before {
+            content: ''; position: absolute; top: -140px; right: -100px;
+            width: 560px; height: 560px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(246,196,83,0.22) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: ''; position: absolute; bottom: -80px; left: -60px;
+            width: 360px; height: 360px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(76,175,80,0.13) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-left { z-index: 1; animation: fadeUp 0.7s ease 0.1s both; }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(28px); }
+            to   { opacity:1; transform:none; }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.1rem, 3.6vw, 3.3rem);
+            font-weight: 900; line-height: 1.14; letter-spacing: -1px;
+            color: #1A1208; margin-bottom: 18px;
+        }
+
+        h1 .hl-o { color: #F28C28; }
+        h1 .hl-v { color: #2E7D32; }
+
+        .hero-sub {
+            font-size: 0.98rem; color: #5C5442; line-height: 1.8;
+            max-width: 450px; margin-bottom: 30px;
+        }
+
+        .hero-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+
+        .pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: white; border: 1px solid #EDE8DD;
+            font-size: 0.77rem; font-weight: 500; color: #5C5442;
+            padding: 5px 12px; border-radius: 999px;
+            box-shadow: 0 2px 12px rgba(26,18,8,0.08);
+        }
+        .pill svg { width: 13px; height: 13px; stroke-width: 2px; flex-shrink: 0; }
+
+        .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-right { z-index: 1; animation: fadeUp 0.7s ease 0.35s both; }
+
+        .dashboard-mock {
+            background: white; border-radius: 24px; padding: 26px;
+            box-shadow: 0 12px 60px rgba(26,18,8,0.14); border: 1px solid #EDE8DD;
+            position: relative;
+        }
+
+        .dashboard-mock::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #F6C453, #F28C28, #4CAF50);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .mock-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .mock-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
+        .mock-sub { font-size: 0.73rem; color: #9B9080; margin-top: 2px; }
+
+        .live-badge {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.71rem; font-weight: 600; color: #2E7D32;
+            background: #E8F5E9; padding: 4px 10px; border-radius: 999px;
+        }
+
+        .live-dot {
+            width: 7px; height: 7px; background: #4CAF50; border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { opacity:1; transform:scale(1); }
+            50%      { opacity:.5; transform:scale(1.4); }
+        }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+
+        .stat-card {
+            background: #FFF8EE; border-radius: 10px; padding: 13px 10px;
+            text-align: center; border: 1px solid rgba(242,140,40,0.12);
+        }
+
+        .stat-card .sn { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:700; }
+        .stat-card .sl { font-size:0.68rem; color:#9B9080; margin-top:2px; }
+        .sn-o { color:#F28C28; }
+        .sn-v { color:#2E7D32; }
+        .sn-y { color:#9A7200; }
+
+        .mock-list { display:flex; flex-direction:column; gap:9px; }
+
+        .mock-item {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 14px; border-radius:10px;
+            background:#FFF8EE; border:1px solid #EDE8DD; transition:all 0.2s;
+        }
+        .mock-item:hover { border-color:#F28C28; transform:translateX(3px); }
+
+        .mi-icon {
+            width:38px; height:38px; border-radius:9px;
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        }
+        .mi-icon svg { width: 18px; height: 18px; stroke-width: 2px; }
+
+        .ico-o { background:rgba(242,140,40,0.14); color:#F28C28; }
+        .ico-y { background:rgba(246,196,83,0.22); color:#9A7200; }
+        .ico-g { background:rgba(76,175,80,0.13); color:#2E7D32; }
+        .ico-r { background:rgba(220,60,60,0.10); color:#DC3C3C; }
+
+        .mi-info { flex:1; }
+        .mi-name { font-size:0.85rem; font-weight:600; }
+        .mi-desc { font-size:0.71rem; color:#9B9080; margin-top:1px; }
+
+        .mi-tag { font-size:0.67rem; font-weight:600; padding:3px 9px; border-radius:999px; }
+        .tag-g { background:#E8F5E9; color:#2E7D32; }
+        .tag-y { background:rgba(246,196,83,0.25); color:#8A6500; }
+        .tag-o { background:rgba(242,140,40,0.14); color:#D9711A; }
+
+        /* ── SECTIONS ── */
+        section { padding: 80px 5%; }
+
+        .section-label {
+            display:inline-flex; align-items:center; gap:8px;
+            font-size:0.74rem; font-weight:700;
+            letter-spacing:1.5px; text-transform:uppercase;
+            color:#F28C28; margin-bottom:10px;
+        }
+        .section-label::before {
+            content:''; display:block; width:18px; height:3px;
+            background:#F28C28; border-radius:2px;
+        }
+
+        .section-title {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.75rem,2.8vw,2.5rem);
+            font-weight:900; letter-spacing:-0.5px;
+            color:#1A1208; margin-bottom:14px; line-height:1.18;
+        }
+
+        .section-desc { font-size:0.97rem; color:#5C5442; line-height:1.75; max-width:540px; margin-bottom:48px; }
+
+        /* ── WHY ── */
+        .why { background: #FFF8EE; }
+        .why-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+
+        .why-card {
+            background:white; border-radius:16px; padding:26px 22px;
+            border:1px solid #EDE8DD; box-shadow:0 2px 12px rgba(26,18,8,0.08);
+            transition:all 0.25s; position:relative; overflow:hidden;
+        }
+        .why-card::after {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+            background:linear-gradient(90deg,#F6C453,#F28C28);
+            transform:scaleX(0); transform-origin:left; transition:transform 0.3s;
+        }
+        .why-card:hover { transform:translateY(-4px); box-shadow:0 6px 32px rgba(26,18,8,0.11); }
+        .why-card:hover::after { transform:scaleX(1); }
+
+        .why-icon { width:50px; height:50px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+        .why-icon svg { width:22px; height:22px; stroke-width:2px; }
+        .wi-1 { background:rgba(242,140,40,0.13); color:#F28C28; }
+        .wi-2 { background:rgba(76,175,80,0.12); color:#2E7D32; }
+        .wi-3 { background:rgba(246,196,83,0.22); color:#9A7200; }
+        .wi-4 { background:rgba(46,125,50,0.12); color:#2E7D32; }
+
+        .why-title { font-weight:700; font-size:0.97rem; margin-bottom:8px; }
+        .why-text { font-size:0.83rem; color:#5C5442; line-height:1.65; }
+
+        /* ── FEATURES ── */
+        .features { background: white; }
+        .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+
+        .feat-card {
+            border:1px solid #EDE8DD; border-radius:16px; padding:28px 24px;
+            transition:all 0.25s; background:white; position:relative; overflow:hidden;
+        }
+        .feat-card:hover { border-color:#F28C28; box-shadow:0 6px 32px rgba(26,18,8,0.11); transform:translateY(-4px); }
+
+        .feat-num { position:absolute; top:18px; right:20px; font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; color:#F6C453; opacity:0.4; }
+        .feat-icon { width:50px; height:50px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+        .feat-icon svg { width:22px; height:22px; stroke-width:2px; }
+        .fi1 { background:rgba(242,140,40,0.12); color:#F28C28; }
+        .fi2 { background:rgba(246,196,83,0.20); color:#9A7200; }
+        .fi3 { background:rgba(76,175,80,0.12); color:#2E7D32; }
+        .fi4 { background:rgba(46,125,50,0.12); color:#2E7D32; }
+        .fi5 { background:rgba(242,140,40,0.16); color:#D9711A; }
+        .fi6 { background:rgba(246,196,83,0.25); color:#9A7200; }
+
+        .feat-title { font-weight:700; font-size:0.98rem; margin-bottom:7px; color:#1A1208; }
+        .feat-text { font-size:0.82rem; color:#5C5442; line-height:1.65; }
+
+        /* ── ROLES ── */
+        .roles { background: #FFF8EE; }
+        .roles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+
+        .role-card {
+            background:white; border-radius:24px; padding:34px 26px;
+            box-shadow:0 6px 32px rgba(26,18,8,0.11); border:1px solid #EDE8DD;
+            position:relative; overflow:hidden; transition:transform 0.25s;
+        }
+        .role-card:hover { transform:translateY(-5px); }
+
+        .role-accent { position:absolute; top:0; left:0; right:0; height:5px; }
+        .ra-a { background:linear-gradient(90deg,#F28C28,#D9711A); }
+        .ra-s { background:linear-gradient(90deg,#F6C453,#E0A800); }
+        .ra-c { background:linear-gradient(90deg,#4CAF50,#2E7D32); }
+
+        .role-avatar { width:60px; height:60px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+        .role-avatar svg { width:28px; height:28px; stroke-width:1.8px; }
+        .av-a { background:rgba(242,140,40,0.14); color:#D9711A; }
+        .av-s { background:rgba(246,196,83,0.25); color:#9A7200; }
+        .av-c { background:rgba(76,175,80,0.14); color:#2E7D32; }
+
+        .role-badge { display:inline-block; font-size:0.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px; }
+        .rb-a { background:rgba(242,140,40,0.14); color:#D9711A; }
+        .rb-s { background:rgba(246,196,83,0.25); color:#8A6500; }
+        .rb-c { background:#E8F5E9; color:#2E7D32; }
+
+        .role-title { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:700; margin-bottom:14px; }
+
+        .role-perms { list-style:none; display:flex; flex-direction:column; gap:8px; }
+        .role-perms li { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:#5C5442; line-height:1.5; }
+        .role-perms li svg { width:14px; height:14px; stroke-width:2.5px; flex-shrink:0; }
+        .ck-a { color:#F28C28; }
+        .ck-s { color:#A07A00; }
+        .ck-c { color:#2E7D32; }
+
+        /* ── RESA / CMD ── */
+        .resa-cmd { background: white; }
+        .resa-grid { display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+
+        .action-card { border-radius:24px; padding:34px 28px; position:relative; overflow:hidden; }
+        .ac-resa { background:linear-gradient(135deg,#FFF3E0,#FFF8EE); border:2px solid rgba(242,140,40,0.22); }
+        .ac-cmd  { background:linear-gradient(135deg,#E8F5E9,#E0F2F1); border:2px solid rgba(76,175,80,0.22); }
+
+        .action-icon { width:54px; height:54px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+        .action-icon svg { width:24px; height:24px; stroke-width:2px; }
+        .ai-o { background:rgba(242,140,40,0.18); color:#D9711A; }
+        .ai-g { background:rgba(76,175,80,0.18); color:#2E7D32; }
+
+        .action-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; margin-bottom:10px; }
+        .action-desc  { font-size:0.88rem; color:#5C5442; line-height:1.7; margin-bottom:22px; }
+
+        .mini-form { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+        .mini-form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+        .mf-field { background:white; border:1px solid #EDE8DD; border-radius:10px; padding:9px 13px; }
+        .mf-label { display:flex; align-items:center; gap:5px; font-size:0.65rem; color:#9B9080; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:3px; }
+        .mf-label svg { width:11px; height:11px; stroke-width:2px; }
+        .mf-val { font-size:0.86rem; font-weight:500; color:#1A1208; }
+
+        .action-chips { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:20px; }
+        .chip { display:inline-flex; align-items:center; gap:5px; padding:6px 13px; border-radius:999px; font-size:0.76rem; font-weight:600; }
+        .chip svg { width:13px; height:13px; stroke-width:2.2px; }
+        .chip-g { background:#E8F5E9; color:#2E7D32; }
+        .chip-o { background:rgba(242,140,40,0.14); color:#D9711A; }
+        .chip-y { background:rgba(246,196,83,0.22); color:#8A6500; }
+
+        .ac-btns { display:flex; gap:9px; flex-wrap:wrap; }
+
+        /* ── CTA ── */
+        .cta-sec {
+            background:linear-gradient(135deg,#1A1208,#2D1F06);
+            text-align:center; padding:88px 5%;
+            position:relative; overflow:hidden;
+        }
+        .cta-sec::before {
+            content:''; position:absolute; top:-100px; left:50%; transform:translateX(-50%);
+            width:580px; height:580px; border-radius:50%;
+            background:radial-gradient(circle,rgba(242,140,40,0.18) 0%,transparent 65%);
+        }
+        .cta-sec .section-label { color:#F6C453; }
+        .cta-sec .section-label::before { background:#F6C453; }
+        .cta-sec .section-title { color:white; max-width:580px; margin:0 auto 14px; }
+        .cta-sec .section-desc { color:rgba(255,255,255,0.55); margin:0 auto 38px; }
+        .cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+        .cta-sec .section-label, .cta-sec .section-title, .cta-sec .section-desc { position:relative; z-index:1; }
+
+        /* ── FOOTER ── */
+        footer { background:#120D04; color:rgba(255,255,255,0.7); padding:58px 5% 30px; }
+
+        .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:36px; margin-bottom:44px; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:44px; }
+
+        .footer-logo { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+        .footer-logo-img { width:38px; height:38px; border-radius:10px; object-fit:cover; flex-shrink:0; }
+        .footer-logo-name { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:900; color:white; letter-spacing:1px; }
+        .footer-logo-name span { color:#F28C28; }
+
+        .footer-tagline { font-size:0.81rem; color:rgba(255,255,255,0.42); line-height:1.7; max-width:230px; }
+        .footer-tech { display:flex; flex-wrap:wrap; gap:6px; margin-top:16px; }
+        .tech-tag { font-size:0.67rem; font-weight:600; padding:3px 8px; border-radius:6px; background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.45); }
+
+        .footer-col h4 { font-size:0.77rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,0.32); margin-bottom:16px; }
+        .footer-col ul { list-style:none; display:flex; flex-direction:column; gap:9px; }
+        .footer-col ul li a { font-size:0.83rem; color:rgba(255,255,255,0.52); transition:color 0.2s; }
+        .footer-col ul li a:hover { color:#F28C28; }
+        .footer-link { font-size:0.83rem; color:rgba(255,255,255,0.52); transition:color 0.2s; text-decoration:none; }
+        .footer-link:hover { color:#F28C28; }
+
+        .footer-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+        .footer-copy { font-size:0.76rem; color:rgba(255,255,255,0.28); }
+        .footer-copy strong { color:#F28C28; }
+        .footer-authors { font-size:0.76rem; color:rgba(255,255,255,0.28); }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:1100px) {
+            .why-grid { grid-template-columns:repeat(2,1fr); }
+            .footer-top { grid-template-columns:1fr 1fr; }
+            .nav-center li a { padding:6px 9px; font-size:0.82rem; }
+        }
+
+        @media(max-width:900px) {
+            .hero { grid-template-columns:1fr; text-align:center; padding-top:96px; }
+            .hero::before, .hero::after { display:none; }
+            .hero-sub { max-width:100%; margin:0 auto 30px; }
+            .hero-pills, .hero-btns { justify-content:center; }
+            .features-grid { grid-template-columns:repeat(2,1fr); }
+            .roles-grid { grid-template-columns:1fr; max-width:460px; margin:0 auto; }
+            .resa-grid { grid-template-columns:1fr; }
+            .nav-center { display:none; }
+            .nav-divider { display:none; }
+        }
+
+        @media(max-width:600px) {
+            .features-grid { grid-template-columns:1fr; }
+            .why-grid { grid-template-columns:1fr; }
+            .footer-top { grid-template-columns:1fr; }
+            .cta-btns .btn-lg { width:100%; }
+            .footer-bottom { flex-direction:column; text-align:center; }
+            .stats-row { grid-template-columns:repeat(2,1fr); }
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <!-- ══ NAVBAR ══ -->
+    <nav>
+        <a href="#hero" class="logo">
+            <h:graphicImage library="images" name="Logo.jpeg" styleClass="logo-img" alt="RIMBERIO" />
+            <div class="logo-text-block">
+                <span class="logo-name">RIM<span>BERIO</span></span>
+                <span class="logo-tagline">Gestion intelligente</span>
+            </div>
+        </a>
+
+        <div class="nav-divider"> </div>
+
+        <ul class="nav-center">
+            <li><a href="#hero" class="nav-link active" data-section="hero">
+                <i data-lucide="house"> </i> Accueil
+            </a></li>
+            <li><a href="#features" class="nav-link" data-section="features">
+                <i data-lucide="sparkles"> </i> Fonctionnalités
+            </a></li>
+            <li><a href="#roles" class="nav-link" data-section="roles">
+                <i data-lucide="users"> </i> Rôles
+            </a></li>
+            <li><a href="#resa" class="nav-link" data-section="resa">
+                <i data-lucide="calendar-check"> </i> Réservation
+            </a></li>
+            <li><a href="#commandes" class="nav-link" data-section="commandes">
+                <i data-lucide="utensils"> </i> Commandes
+            </a></li>
+
+            <li>
+                <h:link outcome="/pages/public/team" styleClass="nav-link-about">
+                    <i data-lucide="info"> </i> À propos
+                </h:link>
+            </li>
+        </ul>
+
+        <div class="nav-cta">
+            <h:link outcome="/pages/auth/login" styleClass="btn btn-outline-vert">
+                <i data-lucide="log-in"> </i> Se connecter
+            </h:link>
+        </div>
+    </nav>
+
+    <!-- ══ HERO ══ -->
+    <section class="hero" id="hero">
+        <div class="hero-left">
+            <h1>
+                La gestion <span class="hl-o">intelligente</span><br/>
+                de votre <span class="hl-v">café / restaurant</span>
+            </h1>
+
+            <p class="hero-sub">
+                Réservations, commandes sur place et en ligne, gestion des tables,
+                menu et organisation du service — tout dans une seule application
+                web centralisée, claire et moderne.
+            </p>
+
+            <div class="hero-pills">
+                <span class="pill"><i data-lucide="calendar"> </i> Réservations</span>
+                <span class="pill"><i data-lucide="armchair"> </i> Tables</span>
+                <span class="pill"><i data-lucide="book-open"> </i> Menu</span>
+                <span class="pill"><i data-lucide="shopping-bag"> </i> Commandes</span>
+                <span class="pill"><i data-lucide="layout-dashboard"> </i> Gestion centralisée</span>
+            </div>
+
+            <div class="hero-btns">
+                <h:link outcome="/pages/auth/login" styleClass="btn btn-orange btn-lg">
+                    <i data-lucide="log-in"> </i> Se connecter
+                </h:link>
+                <!-- ✅ Ouvre directement l'onglet Inscription -->
+                <h:link outcome="/pages/auth/login" styleClass="btn btn-vert btn-lg">
+                    <f:param name="tab" value="register"/>
+                    <i data-lucide="user-plus"> </i> Créer un compte
+                </h:link>
+                <a href="#features" class="btn btn-outline-orange btn-lg">
+                    <i data-lucide="arrow-down"> </i> Voir les fonctionnalités
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="dashboard-mock">
+                <div class="mock-header">
+                    <div>
+                        <div class="mock-title">Aperçu général</div>
+                        <div class="mock-sub">Vue synthétique de l'application</div>
+                    </div>
+                    <div class="live-badge">
+                        <div class="live-dot"> </div>
+                        En direct
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-card"><div class="sn sn-o">24</div><div class="sl">Réservations</div></div>
+                    <div class="stat-card"><div class="sn sn-v">8</div><div class="sl">Commandes actives</div></div>
+                    <div class="stat-card"><div class="sn sn-y">14</div><div class="sl">Tables</div></div>
+                </div>
+
+                <div class="mock-list">
+                    <div class="mock-item">
+                        <div class="mi-icon ico-o"><i data-lucide="utensils"> </i></div>
+                        <div class="mi-info">
+                            <div class="mi-name">Gestion des Commandes</div>
+                            <div class="mi-desc">Sur place &amp; en ligne · suivi des statuts</div>
+                        </div>
+                        <span class="mi-tag tag-o">En cours</span>
+                    </div>
+                    <div class="mock-item">
+                        <div class="mi-icon ico-y"><i data-lucide="armchair"> </i></div>
+                        <div class="mi-info">
+                            <div class="mi-name">Gestion des Tables</div>
+                            <div class="mi-desc">8 disponibles · 4 occupées · 2 réservées</div>
+                        </div>
+                        <span class="mi-tag tag-y">14 tables</span>
+                    </div>
+                    <div class="mock-item">
+                        <div class="mi-icon ico-g"><i data-lucide="book-open"> </i></div>
+                        <div class="mi-info">
+                            <div class="mi-name">Gestion du Menu</div>
+                            <div class="mi-desc">Plats, boissons, catégories, prix</div>
+                        </div>
+                        <span class="mi-tag tag-g">CRUD</span>
+                    </div>
+                    <div class="mock-item">
+                        <div class="mi-icon ico-r"><i data-lucide="calendar-check"> </i></div>
+                        <div class="mi-info">
+                            <div class="mi-name">Réservations</div>
+                            <div class="mi-desc">Confirmée · En attente · Annulée</div>
+                        </div>
+                        <span class="mi-tag tag-g">Live</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ POURQUOI ══ -->
+    <section class="why">
+        <div class="section-label">Pourquoi cette application ?</div>
+        <h2 class="section-title">Une solution face aux défis<br/>de la gestion manuelle</h2>
+        <p class="section-desc">
+            La gestion d'un restaurant sans outil centralisé génère des erreurs,
+            des conflits de réservation et un manque de visibilité. RIMBERIO résout ces problèmes.
+        </p>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="why-icon wi-1"><i data-lucide="layers"> </i></div>
+                <div class="why-title">Centralisation des opérations</div>
+                <div class="why-text">Toutes les données dans un seul système : tables, menus, commandes, réservations et utilisateurs.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon wi-2"><i data-lucide="shield-check"> </i></div>
+                <div class="why-title">Moins d'erreurs et de conflits</div>
+                <div class="why-text">Vérification automatique de la disponibilité des tables. Fini les doublons de réservation.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon wi-3"><i data-lucide="bar-chart-2"> </i></div>
+                <div class="why-title">Suivi des réservations et commandes</div>
+                <div class="why-text">Statuts en temps réel, historique complet et gestion des commandes sur place ou en ligne.</div>
+            </div>
+            <div class="why-card">
+                <div class="why-icon wi-4"><i data-lucide="trending-up"> </i></div>
+                <div class="why-title">Vision claire des performances</div>
+                <div class="why-text">Une vue claire sur l'activité du restaurant pour mieux organiser le service.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ FONCTIONNALITÉS ══ -->
+    <section class="features" id="features">
+        <div class="section-label">Fonctionnalités principales</div>
+        <h2 class="section-title">6 modules complets<br/>pour tout gérer</h2>
+        <p class="section-desc">
+            Chaque module correspond à une brique fonctionnelle essentielle du système,
+            conçue pour répondre aux besoins réels d'un café/restaurant.
+        </p>
+        <div class="features-grid">
+            <div class="feat-card">
+                <div class="feat-num">01</div>
+                <div class="feat-icon fi1"><i data-lucide="shield"> </i></div>
+                <div class="feat-title">Authentification &amp; Rôles</div>
+                <div class="feat-text">Accès sécurisé selon le rôle : administrateur, serveur, client. Gestion des droits et restrictions d'accès par profil.</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">02</div>
+                <div class="feat-icon fi2"><i data-lucide="armchair"> </i></div>
+                <div class="feat-title">Gestion des Tables</div>
+                <div class="feat-text">Ajout, modification, suppression et consultation du statut des tables : Disponible, Occupée ou Réservée.</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">03</div>
+                <div class="feat-icon fi3"><i data-lucide="calendar-check"> </i></div>
+                <div class="feat-title">Gestion des Réservations</div>
+                <div class="feat-text">Création, modification et annulation des réservations avec vérification automatique de la disponibilité.</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">04</div>
+                <div class="feat-icon fi4"><i data-lucide="book-open"> </i></div>
+                <div class="feat-title">Gestion du Menu</div>
+                <div class="feat-text">Plats, boissons, prix, catégories et disponibilité en temps réel.</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">05</div>
+                <div class="feat-icon fi5"><i data-lucide="utensils"> </i></div>
+                <div class="feat-title">Gestion des Commandes</div>
+                <div class="feat-text">Sur place ou en ligne, suivi des statuts, calcul du montant total et historique complet.</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">06</div>
+                <div class="feat-icon fi6"><i data-lucide="layout-dashboard"> </i></div>
+                <div class="feat-title">Organisation &amp; Suivi</div>
+                <div class="feat-text">Une gestion plus fluide des opérations quotidiennes pour améliorer le service et la coordination.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ RÔLES ══ -->
+    <section class="roles" id="roles">
+        <div class="section-label">Une expérience par rôle</div>
+        <h2 class="section-title">Adapté à chaque acteur<br/>du restaurant</h2>
+        <p class="section-desc">
+            Le système gère trois niveaux d'accès distincts, chacun avec des fonctionnalités spécifiques à ses responsabilités.
+        </p>
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-accent ra-a"> </div>
+                <div class="role-avatar av-a"><i data-lucide="shield-check"> </i></div>
+                <div class="role-badge rb-a">Administrateur</div>
+                <div class="role-title">Contrôle total du système</div>
+                <ul class="role-perms">
+                    <li><i data-lucide="check" class="ck-a"> </i> Gestion des utilisateurs et des rôles</li>
+                    <li><i data-lucide="check" class="ck-a"> </i> Gestion des tables</li>
+                    <li><i data-lucide="check" class="ck-a"> </i> Administration complète du menu</li>
+                    <li><i data-lucide="check" class="ck-a"> </i> Suivi des commandes</li>
+                    <li><i data-lucide="check" class="ck-a"> </i> Gestion des réservations</li>
+                    <li><i data-lucide="check" class="ck-a"> </i> Vue globale sur l'activité</li>
+                </ul>
+            </div>
+            <div class="role-card">
+                <div class="role-accent ra-s"> </div>
+                <div class="role-avatar av-s"><i data-lucide="chef-hat"> </i></div>
+                <div class="role-badge rb-s">Serveur</div>
+                <div class="role-title">Gestion opérationnelle</div>
+                <ul class="role-perms">
+                    <li><i data-lucide="check" class="ck-s"> </i> Consultation des réservations</li>
+                    <li><i data-lucide="check" class="ck-s"> </i> Attribution des tables</li>
+                    <li><i data-lucide="check" class="ck-s"> </i> Enregistrement des commandes sur place</li>
+                    <li><i data-lucide="check" class="ck-s"> </i> Mise à jour des statuts</li>
+                    <li><i data-lucide="check" class="ck-s"> </i> Consultation du menu</li>
+                    <li><i data-lucide="check" class="ck-s"> </i> Historique des commandes traitées</li>
+                </ul>
+            </div>
+            <div class="role-card">
+                <div class="role-accent ra-c"> </div>
+                <div class="role-avatar av-c"><i data-lucide="user"> </i></div>
+                <div class="role-badge rb-c">Client</div>
+                <div class="role-title">Expérience utilisateur fluide</div>
+                <ul class="role-perms">
+                    <li><i data-lucide="check" class="ck-c"> </i> Création et gestion de son compte</li>
+                    <li><i data-lucide="check" class="ck-c"> </i> Consultation du menu</li>
+                    <li><i data-lucide="check" class="ck-c"> </i> Réservation en ligne</li>
+                    <li><i data-lucide="check" class="ck-c"> </i> Passation de commandes en ligne</li>
+                    <li><i data-lucide="check" class="ck-c"> </i> Suivi du statut des commandes</li>
+                    <li><i data-lucide="check" class="ck-c"> </i> Historique de ses interactions</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ RÉSERVATION / COMMANDE ══ -->
+    <section class="resa-cmd" id="resa">
+        <div class="section-label">Réservation &amp; Commande</div>
+        <h2 class="section-title">Réserver ou commander<br/>en toute simplicité</h2>
+        <p class="section-desc">
+            Deux parcours fluides pour deux besoins distincts — tout est pensé pour une expérience rapide, claire et sans friction.
+        </p>
+        <div class="resa-grid">
+            <div class="action-card ac-resa">
+                <div class="action-icon ai-o"><i data-lucide="calendar-plus"> </i></div>
+                <div class="action-title">Réserver une table</div>
+                <div class="action-desc">Choisissez votre créneau et trouvez une table disponible en quelques secondes.</div>
+                <div class="mini-form">
+                    <div class="mini-form-row">
+                        <div class="mf-field">
+                            <div class="mf-label"><i data-lucide="calendar"> </i> Date</div>
+                            <div class="mf-val">13 Mars 2026</div>
+                        </div>
+                        <div class="mf-field">
+                            <div class="mf-label"><i data-lucide="clock"> </i> Heure</div>
+                            <div class="mf-val">19 h 30</div>
+                        </div>
+                    </div>
+                    <div class="mf-field">
+                        <div class="mf-label"><i data-lucide="users"> </i> Nombre de personnes</div>
+                        <div class="mf-val">4 personnes</div>
+                    </div>
+                </div>
+                <h:link outcome="/pages/auth/login" styleClass="btn btn-orange">
+                    <i data-lucide="calendar-check"> </i> Réserver maintenant
+                </h:link>
+            </div>
+
+            <div class="action-card ac-cmd" id="commandes">
+                <div class="action-icon ai-g"><i data-lucide="shopping-bag"> </i></div>
+                <div class="action-title">Passer une commande</div>
+                <div class="action-desc">Commandez sur place depuis votre table ou en ligne depuis l'application.</div>
+                <div class="action-chips">
+                    <span class="chip chip-g"><i data-lucide="check-circle"> </i> Commande servie</span>
+                    <span class="chip chip-o"><i data-lucide="flame"> </i> En préparation</span>
+                    <span class="chip chip-y"><i data-lucide="clock"> </i> En attente</span>
+                </div>
+                <div class="ac-btns">
+                    <h:link outcome="/pages/auth/login" styleClass="btn btn-vert">
+                        <i data-lucide="shopping-cart"> </i> Commander en ligne
+                    </h:link>
+                    <!-- ✅ Ouvre directement l'onglet Inscription -->
+                    <h:link outcome="/pages/auth/login" styleClass="btn btn-outline-vert">
+                        <f:param name="tab" value="register"/>
+                        <i data-lucide="user-plus"> </i> Créer un compte
+                    </h:link>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ CTA ══ -->
+    <section class="cta-sec">
+        <div class="section-label">Prêt à commencer ?</div>
+        <h2 class="section-title">Démarrez dès maintenant</h2>
+        <p class="section-desc">
+            Rejoignez la plateforme et gérez votre café/restaurant de façon centralisée, simple et intelligente.
+        </p>
+        <div class="cta-btns">
+            <h:link outcome="/pages/auth/login" styleClass="btn btn-orange btn-lg">
+                <i data-lucide="log-in"> </i> Se connecter
+            </h:link>
+            <!-- ✅ Ouvre directement l'onglet Inscription -->
+            <h:link outcome="/pages/auth/login" styleClass="btn btn-vert btn-lg">
+                <f:param name="tab" value="register"/>
+                <i data-lucide="user-plus"> </i> Créer un compte
+            </h:link>
+        </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer id="footer">
+        <div class="footer-top">
+            <div>
+                <div class="footer-logo">
+                    <h:graphicImage library="images" name="Logo.jpeg" styleClass="footer-logo-img" alt="RIMBERIO" />
+                    <span class="footer-logo-name">RIM<span>BERIO</span></span>
+                </div>
+                <div class="footer-tagline">
+                    Solution web de gestion d'un café / restaurant. Architecture MVC, JSF + Hibernate, Jakarta EE.
+                </div>
+                <div class="footer-tech">
+                    <span class="tech-tag">JSF</span>
+                    <span class="tech-tag">Hibernate</span>
+                    <span class="tech-tag">Jakarta EE</span>
+                    <span class="tech-tag">MVC</span>
+                    <span class="tech-tag">ORM</span>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#hero">Accueil</a></li>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#resa">Réservation</a></li>
+                    <li><a href="#commandes">Commandes</a></li>
+                    <li><h:link outcome="/pages/public/team" styleClass="footer-link">À propos</h:link></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Modules</h4>
+                <ul>
+                    <li><a href="#features">Gestion des tables</a></li>
+                    <li><a href="#features">Gestion du menu</a></li>
+                    <li><a href="#resa">Réservations</a></li>
+                    <li><a href="#commandes">Commandes</a></li>
+                    <li><a href="#features">Organisation</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Projet académique</h4>
+                <ul>
+                    <li><a href="#">ENSA Tanger</a></li>
+                    <li><a href="#">Mini-projet Java EE</a></li>
+                    <li><a href="#">JSF + Hibernate</a></li>
+                    <li><a href="#">Année 2025 / 2026</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">© 2025–2026 <strong>RIMBERIO</strong> — Tous droits réservés</div>
+            <div class="footer-authors">Manar Ouahabi · Sara Laaroussi — ENSA Tanger</div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lucide.createIcons();
+
+            const sections = [
+                { id: 'hero',      link: document.querySelector('[data-section="hero"]') },
+                { id: 'features',  link: document.querySelector('[data-section="features"]') },
+                { id: 'resa',      link: document.querySelector('[data-section="resa"]') },
+                { id: 'commandes', link: document.querySelector('[data-section="commandes"]') },
+                { id: 'roles',     link: document.querySelector('[data-section="roles"]') }
+            ];
+
+            function setActive(sectionId) {
+                sections.forEach(function (s) { if (s.link) s.link.classList.remove('active'); });
+                var current = sections.find(function (s) { return s.id === sectionId; });
+                if (current &amp;&amp; current.link) current.link.classList.add('active');
+            }
+
+            sections.forEach(function (s) {
+                if (s.link) { s.link.addEventListener('click', function () { setActive(s.id); }); }
+            });
+
+            window.addEventListener('scroll', function () {
+                var scrollY = window.scrollY + 100;
+                var current = 'hero';
+                sections.forEach(function (s) {
+                    var el = document.getElementById(s.id);
+                    if (el &amp;&amp; el.offsetTop &lt;= scrollY) current = s.id;
+                });
+                setActive(current);
+            });
+        });
+    </script>
+
+</h:body>
+</html>
