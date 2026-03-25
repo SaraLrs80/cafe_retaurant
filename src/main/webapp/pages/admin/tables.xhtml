@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/adminLayout.xhtml">
+
+    <ui:define name="pageTitle">Gestion des Tables</ui:define>
+
+    <ui:define name="content">
+
+        <!-- ══ Header ══ -->
+        <div class="section-header" style="margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Tables du restaurant</h2>
+                <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">
+                    Gérez la disposition et le statut des tables
+                </p>
+            </div>
+            <h:form>
+                <h:commandButton value="+ Ajouter une table"
+                                 action="#{tableBean.nouvelleTable}"
+                                 styleClass="btn btn-primary"/>
+            </h:form>
+        </div>
+
+        <!-- ══ Stats rapides ══ -->
+        <div class="stats-grid" style="margin-bottom:20px;">
+            <div class="stat-card">
+                <div class="stat-icon green"><span style="font-size:1.2rem;font-weight:700;color:#2D7D46;">D</span></div>
+                <div class="stat-info">
+                    <div class="stat-value"><h:outputText value="#{tableBean.nbDisponibles}"/></div>
+                    <div class="stat-label">Disponibles</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange"><span style="font-size:1.2rem;font-weight:700;color:#E8510A;">O</span></div>
+                <div class="stat-info">
+                    <div class="stat-value"><h:outputText value="#{tableBean.nbOccupees}"/></div>
+                    <div class="stat-label">Occupées</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue"><span style="font-size:1.2rem;font-weight:700;color:#1A6B9A;">R</span></div>
+                <div class="stat-info">
+                    <div class="stat-value"><h:outputText value="#{tableBean.nbReservees}"/></div>
+                    <div class="stat-label">Réservées</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><span style="font-size:1.2rem;font-weight:700;color:#7C3AED;">T</span></div>
+                <div class="stat-info">
+                    <div class="stat-value"><h:outputText value="#{tableBean.totalTables}"/></div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ Grille des tables ══ -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+            <ui:repeat value="#{tableBean.tables}" var="t">
+                <div style="background:white;border-radius:12px;padding:20px;
+                             border:1.5px solid #{t.statut.name() == 'DISPONIBLE' ? '#C8E6C9' :
+                                                  t.statut.name() == 'OCCUPEE'    ? '#FFCDD2' : '#BBDEFB'};
+                             text-align:center;transition:all .2s;">
+                    <div style="font-size:2rem;margin-bottom:8px;"><span style="font-size:1.2rem;font-weight:700;color:#2D7D46;">D</span></div>
+                    <div style="font-weight:700;font-size:1rem;color:var(--dark);margin-bottom:4px;">
+                        Table <h:outputText value="#{t.numeroTable}"/>
+                    </div>
+                    <div style="font-size:.78rem;color:var(--muted);margin-bottom:8px;">
+                        <h:outputText value="#{t.capacite}"/> personnes
+                        <ui:fragment rendered="#{t.emplacement != null}">
+                            · <h:outputText value="#{t.emplacement}"/>
+                        </ui:fragment>
+                    </div>
+                    <span class="badge
+                        #{t.statut.name() == 'DISPONIBLE' ? 'badge-success' :
+                          t.statut.name() == 'OCCUPEE'    ? 'badge-danger'  : 'badge-info'}">
+                        <h:outputText value="#{t.statut}"/>
+                    </span>
+                    <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;">
+                        <h:form>
+                            <h:commandButton value="✏" title="Modifier"
+                                             action="#{tableBean.editer(t)}"
+                                             styleClass="btn btn-secondary btn-sm"/>
+                            <h:commandButton value="🗑" title="Supprimer"
+                                             action="#{tableBean.supprimer(t.idTable)}"
+                                             styleClass="btn btn-danger btn-sm"
+                                             onclick="return confirm('Supprimer cette table ?')"/>
+                        </h:form>
+                    </div>
+                </div>
+            </ui:repeat>
+        </div>
+
+        <!-- ══ Modal Ajouter/Modifier ══ -->
+        <ui:fragment rendered="#{tableBean.showForm}">
+            <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);
+                        display:flex;align-items:center;justify-content:center;z-index:200;">
+                <div style="background:white;border-radius:16px;padding:32px;
+                             width:min(420px,90vw);box-shadow:0 24px 60px rgba(0,0,0,.2);">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;
+                                margin-bottom:20px;color:var(--dark);">
+                        <h:outputText value="#{tableBean.modeEdition ? 'Modifier' : 'Ajouter'} une table"/>
+                    </h3>
+                    <h:form>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
+                                    Numéro de table
+                                </label>
+                                <h:inputText value="#{tableBean.selectedTable.numeroTable}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                    border-radius:8px;font-size:.85rem;outline:none;"
+                                             required="true"/>
+                            </div>
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
+                                    Capacité
+                                </label>
+                                <h:inputText value="#{tableBean.selectedTable.capacite}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                    border-radius:8px;font-size:.85rem;outline:none;"
+                                             required="true"/>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
+                                Emplacement (optionnel)
+                            </label>
+                            <h:inputText value="#{tableBean.selectedTable.emplacement}"
+                                         placeholder="Ex: Terrasse, Salle principale..."
+                                         style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                border-radius:8px;font-size:.85rem;outline:none;"/>
+                        </div>
+                        <div style="margin-bottom:20px;">
+                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
+                                Statut
+                            </label>
+                            <h:selectOneMenu value="#{tableBean.selectedTable.statut}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
+                                                    border-radius:8px;font-size:.85rem;outline:none;">
+                                <f:selectItem itemValue="DISPONIBLE" itemLabel="Disponible"/>
+                                <f:selectItem itemValue="OCCUPEE"    itemLabel="Occupée"/>
+                                <f:selectItem itemValue="RESERVEE"   itemLabel="Réservée"/>
+                            </h:selectOneMenu>
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <h:commandButton value="Annuler" action="#{tableBean.annuler}"
+                                             styleClass="btn btn-secondary" immediate="true"/>
+                            <h:commandButton value="#{tableBean.modeEdition ? 'Modifier' : 'Enregistrer'}"
+                                             action="#{tableBean.sauvegarder}"
+                                             styleClass="btn btn-primary"/>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+
+    </ui:define>
+
+</ui:composition>
+</html>

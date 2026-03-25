@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/adminLayout.xhtml">
+
+    <ui:define name="pageTitle">Gestion du Menu</ui:define>
+
+    <ui:define name="content">
+
+        <div class="section-header" style="margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Menu du restaurant</h2>
+                <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">Gérez les plats et boissons proposés</p>
+            </div>
+            <h:form>
+                <h:commandButton value="+ Ajouter un plat" action="#{menuBean.nouveauPlat}" styleClass="btn btn-primary"/>
+            </h:form>
+        </div>
+
+        <!-- Filtres catégorie -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+            <h:form style="display:flex;gap:8px;flex-wrap:wrap;">
+                <h:commandButton value="Tous"     action="#{menuBean.filtrer('')}"        styleClass="btn #{menuBean.filtreCategorie == '' ? 'btn-primary' : 'btn-secondary'}"/>
+                <h:commandButton value="Entrées"  action="#{menuBean.filtrer('ENTREE')}"  styleClass="btn #{menuBean.filtreCategorie == 'ENTREE'  ? 'btn-primary' : 'btn-secondary'}"/>
+                <h:commandButton value="Plats"    action="#{menuBean.filtrer('PLAT')}"    styleClass="btn #{menuBean.filtreCategorie == 'PLAT'    ? 'btn-primary' : 'btn-secondary'}"/>
+                <h:commandButton value="Desserts" action="#{menuBean.filtrer('DESSERT')}" styleClass="btn #{menuBean.filtreCategorie == 'DESSERT' ? 'btn-primary' : 'btn-secondary'}"/>
+                <h:commandButton value="Boissons" action="#{menuBean.filtrer('BOISSON')}" styleClass="btn #{menuBean.filtreCategorie == 'BOISSON' ? 'btn-primary' : 'btn-secondary'}"/>
+            </h:form>
+        </div>
+
+        <!-- Grille des plats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:24px;">
+            <ui:repeat value="#{menuBean.plats}" var="p">
+                <div style="background:white;border-radius:12px;overflow:hidden;
+                             border:1px solid var(--border);opacity:#{p.disponibilite ? '1' : '0.6'};">
+
+                    <!-- Image ou placeholder SVG -->
+                    <div style="height:120px;background:var(--orange-bg);
+                                display:flex;align-items:center;justify-content:center;position:relative;">
+                        <ui:fragment rendered="#{not empty p.imageUrl}">
+                            <img src="#{p.imageUrl}" alt="#{p.nom}"
+                                 style="width:100%;height:100%;object-fit:cover;"/>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{empty p.imageUrl}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none"
+                                 viewBox="0 0 24 24" stroke="#E8510A" stroke-width="1.4">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                            </svg>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!p.disponibilite}">
+                            <div style="position:absolute;top:8px;right:8px;">
+                                <span class="badge badge-muted">Indisponible</span>
+                            </div>
+                        </ui:fragment>
+                    </div>
+
+                    <div style="padding:14px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <div style="font-weight:600;font-size:.9rem;color:var(--dark);">
+                                <h:outputText value="#{p.nom}"/>
+                            </div>
+                            <div style="font-weight:700;color:var(--orange);font-size:.9rem;white-space:nowrap;">
+                                <h:outputText value="#{p.prix}">
+                                    <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                </h:outputText> MAD
+                            </div>
+                        </div>
+                        <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;
+                                     overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+                            <h:outputText value="#{p.description}"/>
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <span class="badge badge-muted" style="font-size:.65rem;">
+                                <h:outputText value="#{p.categorie.name() == 'ENTREE'  ? 'Entrée'  :
+                                                       p.categorie.name() == 'PLAT'    ? 'Plat'    :
+                                                       p.categorie.name() == 'DESSERT' ? 'Dessert' : 'Boisson'}"/>
+                            </span>
+                        </div>
+                        <div style="display:flex;gap:6px;">
+                            <h:form style="display:flex;gap:6px;flex:1;">
+                                <h:commandButton value="Modifier"
+                                                 action="#{menuBean.editer(p)}"
+                                                 styleClass="btn btn-secondary btn-sm"
+                                                 style="flex:1;"/>
+                                <h:commandButton value="#{p.disponibilite ? 'Désactiver' : 'Activer'}"
+                                                 title="#{p.disponibilite ? 'Désactiver' : 'Activer'}"
+                                                 action="#{menuBean.toggleDisponibilite(p)}"
+                                                 styleClass="btn btn-sm #{p.disponibilite ? 'btn-danger' : 'btn-success'}"/>
+                                <h:commandButton value="Supprimer"
+                                                 action="#{menuBean.supprimer(p.idMenu)}"
+                                                 styleClass="btn btn-danger btn-sm"
+                                                 onclick="return confirm('Supprimer ce plat ?')"/>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:repeat>
+        </div>
+
+        <!-- Modal Ajouter/Modifier -->
+        <ui:fragment rendered="#{menuBean.showForm}">
+            <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);
+                        display:flex;align-items:center;justify-content:center;z-index:200;">
+                <div style="background:white;border-radius:16px;padding:32px;
+                             width:min(500px,90vw);box-shadow:0 24px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--dark);">
+                        <h:outputText value="#{menuBean.modeEdition ? 'Modifier' : 'Ajouter'} un plat"/>
+                    </h3>
+                    <h:form>
+                        <div style="margin-bottom:14px;">
+                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Nom du plat</label>
+                            <h:inputText value="#{menuBean.selectedPlat.nom}"
+                                         style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"
+                                         required="true"/>
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Description</label>
+                            <h:inputTextarea value="#{menuBean.selectedPlat.description}" rows="3"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;resize:vertical;"/>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Prix (MAD)</label>
+                                <h:inputText value="#{menuBean.selectedPlat.prix}"
+                                             style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"
+                                             required="true"/>
+                            </div>
+                            <div>
+                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Catégorie</label>
+                                <h:selectOneMenu value="#{menuBean.selectedPlat.categorie}"
+                                                 style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;">
+                                    <f:selectItem itemValue="ENTREE"  itemLabel="Entrée"/>
+                                    <f:selectItem itemValue="PLAT"    itemLabel="Plat principal"/>
+                                    <f:selectItem itemValue="DESSERT" itemLabel="Dessert"/>
+                                    <f:selectItem itemValue="BOISSON" itemLabel="Boisson"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+                            <h:selectBooleanCheckbox value="#{menuBean.selectedPlat.disponibilite}" id="dispo"/>
+                            <label for="dispo" style="font-size:.85rem;font-weight:500;color:var(--dark);cursor:pointer;">Disponible</label>
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <h:commandButton value="Annuler" action="#{menuBean.annuler}" styleClass="btn btn-secondary" immediate="true"/>
+                            <h:commandButton value="#{menuBean.modeEdition ? 'Modifier' : 'Enregistrer'}"
+                                             action="#{menuBean.sauvegarder}" styleClass="btn btn-primary"/>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+
+    </ui:define>
+
+</ui:composition>
+</html>
