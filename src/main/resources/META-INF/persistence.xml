@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd"
+             version="3.1">
+
+    <persistence-unit name="cafePU" transaction-type="RESOURCE_LOCAL">
+
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- AJOUTE CES LIGNES -->
+        <class>com.cafe.caferestaurant.entities.Utilisateur</class>
+        <class>com.cafe.caferestaurant.enums.Role</class>
+        <class>com.cafe.caferestaurant.entities.TableRestaurant</class>
+        <class>com.cafe.caferestaurant.entities.Reservation</class>
+        <class>com.cafe.caferestaurant.entities.Menu</class>
+        <class>com.cafe.caferestaurant.entities.Commande</class>
+        <class>com.cafe.caferestaurant.entities.LigneCommande</class>
+        <class>com.cafe.caferestaurant.enums.CategorieMenu</class>
+        <class>com.cafe.caferestaurant.enums.StatutCommande</class>
+        <class>com.cafe.caferestaurant.enums.StatutCompte</class>
+        <class>com.cafe.caferestaurant.enums.StatutReservation</class>
+        <class>com.cafe.caferestaurant.enums.StatutTable</class>
+        <class>com.cafe.caferestaurant.enums.TypeCommande</class>
+
+
+
+
+
+
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+        <properties>
+            <!-- Driver -->
+            <property name="jakarta.persistence.jdbc.driver"
+                      value="org.postgresql.Driver"/>
+
+            <!-- URL — on change postgresql:// en jdbc:postgresql:// -->
+            <property name="jakarta.persistence.jdbc.url"
+                      value="jdbc:postgresql://ep-wispy-credit-ad4kmdql-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&amp;channel_binding=require"/>
+
+            <!-- User — ce que tu vois avant les *** -->
+            <property name="jakarta.persistence.jdbc.user"
+                      value="neondb_owner"/>
+
+            <!-- Password — clique "Show password" sur Neon pour le récupérer -->
+            <property name="jakarta.persistence.jdbc.password"
+                      value="npg_3MGauPkOf0Zj"/>
+
+            <!-- Hibernate PostgreSQL -->
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql"     value="true"/>
+            <property name="hibernate.format_sql"   value="true"/>
+            <property name="hibernate.connection.keepalive" value="true"/>
+            <property name="hibernate.c3p0.idle_test_period" value="300"/>
+            <property name="hibernate.c3p0.testConnectionOnCheckout" value="true"/>
+            <property name="hibernate.physical_naming_strategy"
+                      value="org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"/>
+        </properties>
+
+    </persistence-unit>
+</persistence>
