@@ -86,13 +86,22 @@ public class AuthFilter implements Filter {
     // ── Ressources accessibles sans authentification ──────────────────────
     private boolean isPublicResource(String uri) {
         return uri.endsWith("/")
-                || uri.endsWith("/index.xhtml")           // landing page racine
-                || uri.contains("/pages/public/")          // access-denied.xhtml, team.xhtml
-                || uri.contains("/pages/auth/")            // login.xhtml, success.xhtml
-                || uri.contains("/auth/google")            // OAuth Google callback
-                || uri.contains("/javax.faces.resource")   // ressources JSF internes
-                || uri.contains("/resources/css/")         // CSS
-                || uri.contains("/resources/images/")      // images
-                || uri.contains("/resources/js/");         // JS
+                || uri.endsWith("/index.xhtml")
+                || uri.contains("/pages/public/")
+                || uri.contains("/pages/auth/")
+                || uri.contains("/auth/google")
+                // ✅ JSF resources (images, CSS, JS via h:graphicImage, h:outputStylesheet...)
+                || uri.contains("javax.faces.resource")   // couvre /javax.faces.resource/...
+                || uri.contains("jakarta.faces.resource")  // ← AJOUTE ÇA pour Jakarta EE
+                || uri.contains("/resources/css/")
+                || uri.contains("/resources/images/")
+                || uri.contains("/resources/js/")
+                || uri.endsWith(".css")
+                || uri.endsWith(".js")
+                || uri.endsWith(".png")
+                || uri.endsWith(".jpg")
+                || uri.endsWith(".jpeg")
+                || uri.endsWith(".ico")
+                || uri.endsWith(".svg");
     }
 }
