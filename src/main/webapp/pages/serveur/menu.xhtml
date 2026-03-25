@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/serveurLayout.xhtml">
+
+    <ui:define name="pageTitle">Menu du restaurant</ui:define>
+
+    <ui:define name="content">
+
+        <div class="section-header" style="margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Menu du restaurant</h2>
+                <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">
+                    Consultez les plats et boissons disponibles
+                </p>
+            </div>
+        </div>
+
+        <!-- Filtres catégorie -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+            <h:form>
+                <h:commandButton value="Tous"
+                                 action="#{menuBean.filtrer('')}"
+                                 styleClass="btn #{empty menuBean.filtreCategorie ? 'btn-primary' : 'btn-secondary'}"/>
+                <h:commandButton value="Entrées"
+                                 action="#{menuBean.filtrer('ENTREE')}"
+                                 styleClass="btn #{menuBean.filtreCategorie == 'ENTREE' ? 'btn-primary' : 'btn-secondary'}"
+                                 style="margin-left:6px;"/>
+                <h:commandButton value="Plats"
+                                 action="#{menuBean.filtrer('PLAT')}"
+                                 styleClass="btn #{menuBean.filtreCategorie == 'PLAT' ? 'btn-primary' : 'btn-secondary'}"
+                                 style="margin-left:6px;"/>
+                <h:commandButton value="Desserts"
+                                 action="#{menuBean.filtrer('DESSERT')}"
+                                 styleClass="btn #{menuBean.filtreCategorie == 'DESSERT' ? 'btn-primary' : 'btn-secondary'}"
+                                 style="margin-left:6px;"/>
+                <h:commandButton value="Boissons"
+                                 action="#{menuBean.filtrer('BOISSON')}"
+                                 styleClass="btn #{menuBean.filtreCategorie == 'BOISSON' ? 'btn-primary' : 'btn-secondary'}"
+                                 style="margin-left:6px;"/>
+            </h:form>
+        </div>
+
+        <!-- Grille de plats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
+            <ui:repeat value="#{menuBean.plats}" var="p">
+                <div style="background:white;border-radius:12px;border:1px solid var(--border);
+                             overflow:hidden;#{not p.disponibilite ? 'opacity:0.55;' : ''}">
+
+                    <!-- Image ou placeholder coloré -->
+                    <div style="height:120px;background:var(--orange-bg);
+                                display:flex;align-items:center;justify-content:center;
+                                position:relative;">
+                        <ui:fragment rendered="#{not empty p.imageUrl}">
+                            <img src="#{p.imageUrl}" alt="#{p.nom}"
+                                 style="width:100%;height:100%;object-fit:cover;"/>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{empty p.imageUrl}">
+                            <!-- Icône SVG selon la catégorie -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none"
+                                 viewBox="0 0 24 24" stroke="#E8510A" stroke-width="1.4">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                            </svg>
+                        </ui:fragment>
+                        <div style="position:absolute;top:8px;right:8px;">
+                            <span class="badge #{p.disponibilite ? 'badge-success' : 'badge-danger'}">
+                                <h:outputText value="#{p.disponibilite ? 'Disponible' : 'Indisponible'}"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Infos -->
+                    <div style="padding:14px;">
+                        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+                            <div style="font-weight:600;font-size:.9rem;color:var(--dark);">
+                                <h:outputText value="#{p.nom}"/>
+                            </div>
+                            <div style="font-weight:700;color:var(--orange);font-size:.95rem;
+                                        flex-shrink:0;margin-left:8px;">
+                                <h:outputText value="#{p.prix}">
+                                    <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                </h:outputText>
+                                <span style="font-size:.7rem;"> MAD</span>
+                            </div>
+                        </div>
+                        <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;line-height:1.4;min-height:32px;">
+                            <h:outputText value="#{p.description}"/>
+                        </div>
+                        <span class="badge badge-muted" style="font-size:.65rem;">
+                            <h:outputText value="#{p.categorie.name() == 'ENTREE'  ? 'Entrée'  :
+                                                   p.categorie.name() == 'PLAT'    ? 'Plat'    :
+                                                   p.categorie.name() == 'DESSERT' ? 'Dessert'  : 'Boisson'}"/>
+                        </span>
+                    </div>
+                </div>
+            </ui:repeat>
+        </div>
+
+        <ui:fragment rendered="#{empty menuBean.plats}">
+            <div style="text-align:center;padding:60px;color:var(--muted);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"
+                     style="margin-bottom:12px;color:var(--border);">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <p>Aucun plat dans cette catégorie</p>
+            </div>
+        </ui:fragment>
+
+    </ui:define>
+
+</ui:composition>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/serveurLayout.xhtml">
+
+    <ui:define name="pageTitle">Réservations</ui:define>
+
+    <ui:define name="content">
+
+        <div class="section-header" style="margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Réservations</h2>
+                <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">
+                    Consultez et gérez les réservations du jour
+                </p>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <div style="background:var(--orange-bg);border-radius:10px;padding:10px 16px;text-align:center;">
+                    <div style="font-size:1.2rem;font-weight:700;color:var(--orange);">
+                        <h:outputText value="#{reservationBean.reservations.size()}"/>
+                    </div>
+                    <div style="font-size:.7rem;color:var(--muted);">Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="card" style="margin-bottom:20px;">
+            <div style="padding:12px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                <h:form style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                    <h:selectOneMenu value="#{reservationBean.filtreStatut}"
+                                     style="padding:8px 14px;border:1.5px solid var(--border);
+                                            border-radius:8px;font-size:.85rem;outline:none;">
+                        <f:selectItem itemValue=""           itemLabel="Tous les statuts"/>
+                        <f:selectItem itemValue="CONFIRMEE"  itemLabel="Confirmée"/>
+                        <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente"/>
+                        <f:selectItem itemValue="ANNULEE"    itemLabel="Annulée"/>
+                    </h:selectOneMenu>
+                    <h:commandButton value="Filtrer"       action="#{reservationBean.filtrer}"          styleClass="btn btn-secondary"/>
+                    <h:commandButton value="Aujourd'hui"   action="#{reservationBean.filtrerAujourdhui}" styleClass="btn btn-primary"/>
+                    <h:commandButton value="Tout afficher" action="#{reservationBean.filtrer}"           styleClass="btn btn-secondary" immediate="true"/>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Personnes</th>
+                    <th>Table</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat value="#{reservationBean.reservations}" var="r">
+                    <tr>
+                        <td>
+                            <div style="font-weight:500;font-size:.88rem;">
+                                <h:outputText value="#{r.client.prenom} #{r.client.nom}"/>
+                            </div>
+                            <div style="font-size:.75rem;color:var(--muted);">
+                                <h:outputText value="#{r.client.telephone}"/>
+                            </div>
+                        </td>
+                        <td style="font-size:.85rem;"><h:outputText value="#{r.dateReservation}"/></td>
+                        <td style="font-size:.85rem;font-weight:500;color:var(--orange);">
+                            <h:outputText value="#{r.heureReservation}"/>
+                        </td>
+                        <td style="text-align:center;font-weight:600;">
+                            <h:outputText value="#{r.nombrePersonnes}"/>
+                            <span style="font-size:.72rem;color:var(--muted);"> pers.</span>
+                        </td>
+                        <td style="font-weight:500;">
+                            <span style="background:var(--orange-bg);color:var(--orange);
+                                         padding:3px 8px;border-radius:6px;font-size:.8rem;">
+                                Table <h:outputText value="#{r.table.numeroTable}"/>
+                            </span>
+                            <div style="font-size:.72rem;color:var(--muted);margin-top:2px;">
+                                <h:outputText value="#{r.table.capacite}"/> places
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge
+                                #{r.statut.name() == 'CONFIRMEE'  ? 'badge-success' :
+                                  r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' : 'badge-danger'}">
+                                <h:outputText value="#{r.statut.name() == 'CONFIRMEE'  ? 'Confirmée' :
+                                                       r.statut.name() == 'EN_ATTENTE' ? 'En attente' : 'Annulée'}"/>
+                            </span>
+                        </td>
+                        <td>
+                            <h:form style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <ui:fragment rendered="#{r.statut.name() == 'EN_ATTENTE'}">
+                                    <h:commandButton value="Confirmer"
+                                                     action="#{reservationBean.confirmer(r)}"
+                                                     styleClass="btn btn-success btn-sm"/>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{r.statut.name() != 'ANNULEE'}">
+                                    <h:commandButton value="Annuler"
+                                                     action="#{reservationBean.annuler(r)}"
+                                                     styleClass="btn btn-danger btn-sm"
+                                                     onclick="return confirm('Annuler cette réservation ?')"/>
+                                </ui:fragment>
+                            </h:form>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                <ui:fragment rendered="#{empty reservationBean.reservations}">
+                    <tr>
+                        <td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">
+                            Aucune réservation trouvée
+                        </td>
+                    </tr>
+                </ui:fragment>
+                </tbody>
+            </table>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+</html>

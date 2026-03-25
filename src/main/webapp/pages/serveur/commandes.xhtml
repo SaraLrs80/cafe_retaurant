@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/serveurLayout.xhtml">
+
+    <ui:define name="pageTitle">Gestion des Commandes</ui:define>
+
+    <ui:define name="content">
+
+        <div class="section-header" style="margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Commandes</h2>
+                <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">Créez et gérez les commandes en salle</p>
+            </div>
+            <h:form>
+                <h:commandButton value="+ Nouvelle commande"
+                                 action="#{serveurCommandeBean.ouvrirFormCommande}"
+                                 styleClass="btn btn-primary"/>
+            </h:form>
+        </div>
+
+        <!-- Filtre -->
+        <div class="card" style="margin-bottom:20px;">
+            <div style="padding:12px 20px;display:flex;gap:12px;align-items:center;">
+                <h:form style="display:flex;gap:12px;align-items:center;">
+                    <h:selectOneMenu value="#{serveurCommandeBean.filtreStatut}"
+                                     style="padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;">
+                        <f:selectItem itemValue="" itemLabel="Tous les statuts"/>
+                        <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente"/>
+                        <f:selectItem itemValue="EN_COURS"   itemLabel="En cours"/>
+                        <f:selectItem itemValue="SERVIE"     itemLabel="Servie"/>
+                        <f:selectItem itemValue="PAYEE"      itemLabel="Payée"/>
+                        <f:selectItem itemValue="ANNULEE"    itemLabel="Annulée"/>
+                    </h:selectOneMenu>
+                    <h:commandButton value="Filtrer" action="#{serveurCommandeBean.filtrer}" styleClass="btn btn-secondary"/>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>N° Commande</th><th>Date</th><th>Type</th><th>Table</th>
+                    <th>Montant</th><th>Statut</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat value="#{serveurCommandeBean.commandes}" var="c">
+                    <tr>
+                        <td style="font-weight:600;">#<h:outputText value="#{c.idCommande}"/></td>
+                        <td style="font-size:.82rem;color:var(--muted);"><h:outputText value="#{c.dateCommande}"/></td>
+                        <td>
+                            <span class="badge #{c.typeCommande.name() == 'SUR_PLACE' ? 'badge-info' : 'badge-muted'}">
+                                <h:outputText value="#{c.typeCommande.name() == 'SUR_PLACE' ? 'Sur place' : 'En ligne'}"/>
+                            </span>
+                        </td>
+                        <td style="font-size:.83rem;">
+                            <ui:fragment rendered="#{c.typeCommande.name() == 'SUR_PLACE'}">
+                                Table <h:outputText value="#{c.table != null ? c.table.numeroTable : '—'}"/>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{c.typeCommande.name() == 'EN_LIGNE'}">
+                                <h:outputText value="#{c.client != null ? c.client.prenom.concat(' ').concat(c.client.nom) : '—'}"/>
+                            </ui:fragment>
+                        </td>
+                        <td style="font-weight:600;color:var(--green);">
+                            <h:outputText value="#{c.montantTotal}">
+                                <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                            </h:outputText> MAD
+                        </td>
+                        <td>
+                            <span class="badge #{c.statut.name() == 'PAYEE' ? 'badge-success' : c.statut.name() == 'EN_COURS' ? 'badge-warning' : c.statut.name() == 'EN_ATTENTE' ? 'badge-muted' : c.statut.name() == 'ANNULEE' ? 'badge-danger' : 'badge-info'}">
+                                <h:outputText value="#{c.statut}"/>
+                            </span>
+                        </td>
+                        <td>
+                            <h:form style="display:flex;gap:6px;">
+                                <h:commandButton value="Détails" action="#{serveurCommandeBean.voirDetails(c)}" styleClass="btn btn-secondary btn-sm"/>
+                                <ui:fragment rendered="#{c.statut.name() != 'PAYEE' and c.statut.name() != 'ANNULEE'}">
+                                    <h:commandButton value="Suivant" action="#{serveurCommandeBean.avancerStatut(c)}" styleClass="btn btn-success btn-sm"/>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{c.statut.name() == 'EN_ATTENTE'}">
+                                    <h:commandButton value="Annuler" action="#{serveurCommandeBean.annulerCommande(c)}"
+                                                     styleClass="btn btn-danger btn-sm"
+                                                     onclick="return confirm('Annuler cette commande ?')"/>
+                                </ui:fragment>
+                            </h:form>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                <ui:fragment rendered="#{empty serveurCommandeBean.commandes}">
+                    <tr>
+                        <td colspan="7" style="text-align:center;color:var(--muted);padding:40px;">
+                            Aucune commande trouvée
+                        </td>
+                    </tr>
+                </ui:fragment>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal Nouvelle Commande -->
+        <ui:fragment rendered="#{serveurCommandeBean.showFormCommande}">
+            <div style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;">
+                <div style="background:white;border-radius:16px;width:min(680px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.25);">
+                    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                        <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);">Nouvelle commande</h3>
+                        <h:form>
+                            <h:commandButton value="Fermer" action="#{serveurCommandeBean.fermerForm}"
+                                             styleClass="btn btn-secondary btn-sm" immediate="true"/>
+                        </h:form>
+                    </div>
+
+                    <div style="padding:24px;">
+                        <h:form>
+                            <!-- Type fixe + Table -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                                <div>
+                                    <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:6px;">Type de commande</label>
+                                    <div style="padding:9px 12px;background:#F8F5F0;border-radius:8px;font-size:.85rem;color:var(--dark);border:1.5px solid var(--border);">
+                                        Sur place
+                                    </div>
+                                    <h:inputHidden value="#{serveurCommandeBean.typeCommande}"/>
+                                </div>
+                                <div>
+                                    <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:6px;">Table</label>
+                                    <h:selectOneMenu value="#{serveurCommandeBean.selectedTableId}"
+                                                     style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;">
+                                        <f:selectItem itemValue="" itemLabel="— Sélectionner une table —"/>
+                                        <f:selectItems value="#{serveurCommandeBean.tablesDisponibles}"
+                                                       var="t" itemValue="#{t.idTable}"
+                                                       itemLabel="Table #{t.numeroTable} (#{t.capacite} pers.)"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+
+                            <!-- Ajouter article -->
+                            <div style="background:#F8F5F0;border-radius:10px;padding:16px;margin-bottom:16px;">
+                                <div style="font-size:.82rem;font-weight:600;margin-bottom:10px;">Ajouter un article</div>
+                                <div style="display:grid;grid-template-columns:2fr 80px auto;gap:10px;align-items:end;">
+                                    <div>
+                                        <label style="font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px;">Plat</label>
+                                        <h:selectOneMenu value="#{serveurCommandeBean.selectedMenuId}"
+                                                         style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;outline:none;background:white;">
+                                            <f:selectItem itemValue="" itemLabel="— Choisir un plat —"/>
+                                            <f:selectItems value="#{serveurCommandeBean.menuDisponible}"
+                                                           var="m" itemValue="#{m.idMenu}"
+                                                           itemLabel="#{m.nom} — #{m.prix} MAD"/>
+                                        </h:selectOneMenu>
+                                    </div>
+                                    <div>
+                                        <label style="font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px;">Qté</label>
+                                        <h:inputText value="#{serveurCommandeBean.quantiteTemp}"
+                                                     style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;outline:none;text-align:center;"/>
+                                    </div>
+                                    <h:commandButton value="Ajouter" action="#{serveurCommandeBean.ajouterArticle}"
+                                                     styleClass="btn btn-primary" style="height:38px;"/>
+                                </div>
+                            </div>
+
+                            <!-- Articles ajoutés -->
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:.82rem;font-weight:600;margin-bottom:10px;">Articles de la commande</div>
+                                <ui:fragment rendered="#{empty serveurCommandeBean.lignesTemp}">
+                                    <div style="text-align:center;padding:20px;color:var(--muted);border:2px dashed var(--border);border-radius:8px;font-size:.83rem;">
+                                        Aucun article ajouté
+                                    </div>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{not empty serveurCommandeBean.lignesTemp}">
+                                    <table style="width:100%;border-collapse:collapse;">
+                                        <thead>
+                                        <tr style="background:#F8F5F0;">
+                                            <th style="padding:8px 12px;font-size:.72rem;text-align:left;color:var(--muted);">Plat</th>
+                                            <th style="padding:8px 12px;font-size:.72rem;text-align:center;color:var(--muted);">Qté</th>
+                                            <th style="padding:8px 12px;font-size:.72rem;text-align:right;color:var(--muted);">Prix unit.</th>
+                                            <th style="padding:8px 12px;font-size:.72rem;text-align:right;color:var(--muted);">Total</th>
+                                            <th style="padding:8px 12px;"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <ui:repeat value="#{serveurCommandeBean.lignesTemp}" var="l" varStatus="vs">
+                                            <tr style="border-bottom:1px solid #F0EBE3;">
+                                                <td style="padding:10px 12px;font-size:.84rem;font-weight:500;"><h:outputText value="#{l.menu.nom}"/></td>
+                                                <td style="padding:10px 12px;text-align:center;font-size:.84rem;"><h:outputText value="#{l.quantite}"/></td>
+                                                <td style="padding:10px 12px;text-align:right;font-size:.84rem;">
+                                                    <h:outputText value="#{l.prixUnitaire}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText> MAD
+                                                </td>
+                                                <td style="padding:10px 12px;text-align:right;font-size:.84rem;font-weight:600;color:var(--green);">
+                                                    <h:outputText value="#{l.prixUnitaire.multiply(l.quantite)}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText> MAD
+                                                </td>
+                                                <td style="padding:10px 12px;">
+                                                    <h:commandButton value="Supprimer"
+                                                                     action="#{serveurCommandeBean.supprimerArticle(vs.index)}"
+                                                                     styleClass="btn btn-danger btn-sm"/>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                        </tbody>
+                                    </table>
+                                    <div style="text-align:right;padding:12px 12px 0;font-size:1rem;font-weight:700;color:var(--dark);">
+                                        Total :
+                                        <h:outputText value="#{serveurCommandeBean.totalTemp}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText> MAD
+                                    </div>
+                                </ui:fragment>
+                            </div>
+
+                            <!-- Boutons -->
+                            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                                <h:commandButton value="Annuler" action="#{serveurCommandeBean.fermerForm}"
+                                                 styleClass="btn btn-secondary" immediate="true"/>
+                                <h:commandButton value="Enregistrer la commande"
+                                                 action="#{serveurCommandeBean.enregistrerCommande}"
+                                                 styleClass="btn btn-primary"
+                                                 rendered="#{not empty serveurCommandeBean.lignesTemp}"/>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </ui:fragment>
+
+        <!-- Modal Détails -->
+        <ui:fragment rendered="#{serveurCommandeBean.showDetails}">
+            <div style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200;">
+                <div style="background:white;border-radius:16px;padding:28px;width:min(500px,90vw);max-height:85vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.25);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                        <h3 style="font-size:1.1rem;font-weight:700;">
+                            Commande #<h:outputText value="#{serveurCommandeBean.selectedCommande.idCommande}"/>
+                        </h3>
+                        <h:form>
+                            <h:commandButton value="Fermer" action="#{serveurCommandeBean.fermerDetails}"
+                                             styleClass="btn btn-secondary btn-sm" immediate="true"/>
+                        </h:form>
+                    </div>
+                    <table class="data-table" style="margin-bottom:16px;">
+                        <thead><tr><th>Plat</th><th>Qté</th><th>Prix unit.</th><th>Total</th></tr></thead>
+                        <tbody>
+                        <ui:repeat value="#{serveurCommandeBean.selectedCommande.lignes}" var="l">
+                            <tr>
+                                <td><h:outputText value="#{l.menu.nom}"/></td>
+                                <td><h:outputText value="#{l.quantite}"/></td>
+                                <td><h:outputText value="#{l.prixUnitaire}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText> MAD</td>
+                                <td style="font-weight:600;">
+                                    <h:outputText value="#{l.prixUnitaire.multiply(l.quantite)}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText> MAD
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                        </tbody>
+                    </table>
+                    <div style="text-align:right;font-weight:700;font-size:1rem;">
+                        Total :
+                        <h:outputText value="#{serveurCommandeBean.selectedCommande.montantTotal}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText> MAD
+                    </div>
+                </div>
+            </div>
+        </ui:fragment>
+
+    </ui:define>
+
+</ui:composition>
+</html>

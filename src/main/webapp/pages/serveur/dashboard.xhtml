@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/serveurLayout.xhtml">
+
+    <ui:define name="pageTitle">Accueil</ui:define>
+
+    <ui:define name="content">
+        <div style="text-align:center;padding:60px;color:var(--muted);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"
+                 style="margin-bottom:16px;color:var(--border);">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 7h13M7 13l-1-4m6 4v4m0 0h2m-2 0H9"/>
+            </svg>
+            <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:8px;color:var(--dark);">
+                Bienvenue, <h:outputText value="#{authBean.currentUser.prenom}"/> !
+            </h2>
+            <p style="font-size:.85rem;">Utilisez le menu de gauche pour gérer les commandes et réservations.</p>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>
