@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      lang="fr">
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>À propos — RIMBERIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&amp;family=DM+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"> </script>
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --jaune:       #F6C453;
+            --orange:      #F28C28;
+            --orange-dark: #D9711A;
+            --vert:        #4CAF50;
+            --vert-dark:   #2E7D32;
+            --vert-light:  #E8F5E9;
+            --blanc:       #FFFFFF;
+            --creme:       #FFF8EE;
+            --gris-clair:  #F3EEE6;
+            --gris-bord:   #E8DED0;
+            --gris-texte:  #6A6257;
+            --noir:        #1A1208;
+            --shadow-sm:   0 6px 20px rgba(26,18,8,0.06);
+            --shadow-md:   0 12px 35px rgba(26,18,8,0.10);
+            --radius-md:   18px;
+            --radius-lg:   26px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(160deg, #FFF8EE 0%, #FFFFFF 55%, #F7FBF4 100%);
+            color: #1A1208;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ── NAVBAR ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 999;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(242,140,40,0.14);
+            box-shadow: 0 2px 18px rgba(26,18,8,0.05);
+            animation: navIn 0.5s ease both;
+        }
+
+        @keyframes navIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: none; opacity: 1; }
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            text-decoration: none;
+        }
+
+        .nav-logo-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 6px 18px rgba(242,140,40,0.28);
+            flex-shrink: 0;
+        }
+
+        .nav-logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+
+        .nav-logo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.18rem;
+            font-weight: 900;
+            color: #1A1208;
+            letter-spacing: 1px;
+        }
+        .nav-logo-name span { color: #F28C28; }
+
+        .nav-logo-tagline {
+            font-size: 0.60rem;
+            color: #9B9080;
+            font-weight: 500;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1.5px solid rgba(76,175,80,0.35);
+            color: #2E7D32;
+            font-size: 0.88rem;
+            font-weight: 600;
+            background: white;
+            transition: all 0.22s ease;
+            text-decoration: none;
+        }
+
+        .nav-back svg {
+            width: 15px;
+            height: 15px;
+            stroke-width: 2.2px;
+            flex-shrink: 0;
+        }
+
+        .nav-back:hover {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            transform: translateY(-1px);
+        }
+
+        /* ── MAIN ── */
+        main { padding: 120px 5% 80px; }
+
+        /* ── HERO ── */
+        .hero {
+            max-width: 900px;
+            margin: 0 auto 54px;
+            text-align: center;
+            animation: fadeUp 0.7s ease 0.1s both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            border-radius: 999px;
+            background: rgba(242,140,40,0.10);
+            border: 1px solid rgba(242,140,40,0.20);
+            color: #D9711A;
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .hero-badge svg {
+            width: 13px;
+            height: 13px;
+            stroke-width: 2.2px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 4.3vw, 3.7rem);
+            line-height: 1.12;
+            letter-spacing: -1.2px;
+            margin-bottom: 18px;
+            color: #1A1208;
+        }
+
+        .hero h1 .hl-o { color: #F28C28; }
+        .hero h1 .hl-v { color: #2E7D32; }
+
+        .hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #6A6257;
+        }
+
+        /* ── STATS RAPIDES ── */
+        .stats-band {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 52px;
+            animation: fadeUp 0.7s ease 0.25s both;
+        }
+
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 1px solid #EDE8DD;
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: #5C5442;
+            box-shadow: 0 2px 10px rgba(26,18,8,0.06);
+        }
+
+        .stat-pill svg {
+            width: 15px;
+            height: 15px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+        }
+
+        .stat-pill .sp-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #F28C28;
+        }
+
+        /* ── CARDS ── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26px;
+            max-width: 1180px;
+            margin: 0 auto;
+            animation: fadeUp 0.7s ease 0.35s both;
+        }
+
+        .member-card {
+            background: rgba(255,255,255,0.92);
+            border: 1px solid #E8DED0;
+            border-radius: 26px;
+            box-shadow: 0 6px 20px rgba(26,18,8,0.06);
+            overflow: hidden;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .member-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 16px 40px rgba(26,18,8,0.12);
+        }
+
+        .card-top-line {
+            height: 5px;
+            width: 100%;
+        }
+
+        .top-manar { background: linear-gradient(90deg, #F6C453, #F28C28); }
+        .top-sara  { background: linear-gradient(90deg, #8FD19E, #4CAF50); }
+        .top-prof  { background: linear-gradient(90deg, #FFE08A, #D4A400); }
+
+        .card-body {
+            padding: 30px 24px 26px;
+            text-align: center;
+        }
+
+        /* Avatar */
+        .avatar-wrap {
+            width: 124px;
+            height: 124px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            padding: 4px;
+        }
+
+        .avatar-manar { background: linear-gradient(135deg, #F6C453, #F28C28); }
+        .avatar-sara  { background: linear-gradient(135deg, #8FD19E, #2E7D32); }
+        .avatar-prof  { background: linear-gradient(135deg, #FFE08A, #D4A400); }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: white;
+        }
+
+        .avatar-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Role chip */
+        .role-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 13px;
+            border-radius: 999px;
+            font-size: 0.71rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .role-chip svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2.2px;
+        }
+
+        .chip-manar { background: rgba(242,140,40,0.12); color: #D9711A; }
+        .chip-sara  { background: rgba(76,175,80,0.12);  color: #2E7D32; }
+        .chip-prof  { background: rgba(246,196,83,0.20); color: #8A6A00; }
+
+        .member-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.28rem;
+            font-weight: 700;
+            color: #1A1208;
+            margin-bottom: 6px;
+        }
+
+        .member-sub {
+            font-size: 0.81rem;
+            color: #8A8072;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .member-sub svg {
+            width: 13px;
+            height: 13px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+        }
+
+        .mini-divider {
+            width: 72px;
+            height: 3px;
+            border-radius: 999px;
+            margin: 0 auto 16px;
+        }
+
+        .div-manar { background: linear-gradient(90deg, #F6C453, #F28C28); }
+        .div-sara  { background: linear-gradient(90deg, #8FD19E, #4CAF50); }
+        .div-prof  { background: linear-gradient(90deg, #FFE08A, #D4A400); }
+
+        .member-desc {
+            font-size: 0.90rem;
+            line-height: 1.75;
+            color: #6A6257;
+        }
+
+        /* Tags compétences */
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .skill-tag {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: #F3EEE6;
+            color: #6A6257;
+            border: 1px solid #E8DED0;
+        }
+
+        /* ── PROJECT BOX ── */
+        .project-box {
+            max-width: 980px;
+            margin: 52px auto 0;
+            background: linear-gradient(135deg, #FFF8EE, #FFFFFF);
+            border: 1px solid #E8DED0;
+            border-radius: 26px;
+            box-shadow: 0 6px 20px rgba(26,18,8,0.06);
+            padding: 38px 36px;
+            text-align: center;
+            animation: fadeUp 0.7s ease 0.45s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #F6C453, #F28C28, #4CAF50);
+        }
+
+        .project-box-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            border: 1px solid rgba(242,140,40,0.18);
+        }
+
+        .project-box-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke-width: 1.8px;
+            color: #D9711A;
+        }
+
+        .project-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #1A1208;
+            letter-spacing: -0.5px;
+        }
+
+        .project-box p {
+            font-size: 0.97rem;
+            line-height: 1.8;
+            color: #6A6257;
+            max-width: 760px;
+            margin: 0 auto 22px;
+        }
+
+        .project-tech {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tech-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #E8DED0;
+            color: #5C5442;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            margin-top: 70px;
+            border-top: 1px solid rgba(26,18,8,0.08);
+            background: rgba(255,255,255,0.80);
+            padding: 26px 5%;
+        }
+
+        .footer-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .footer-logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .footer-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .footer-logo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 900;
+            color: #1A1208;
+            letter-spacing: 0.8px;
+        }
+
+        .footer-logo-name span { color: #F28C28; }
+
+        .footer-copy {
+            font-size: 0.80rem;
+            color: #8A8072;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .footer-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: #6A6257;
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+
+        .footer-links a svg {
+            width: 13px;
+            height: 13px;
+            stroke-width: 2px;
+        }
+
+        .footer-links a:hover { color: #F28C28; }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width: 980px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                max-width: 430px;
+            }
+            .stats-band { gap: 10px; }
+        }
+
+        @media(max-width: 640px) {
+            .hero p { font-size: 0.93rem; }
+            .footer-inner { flex-direction: column; text-align: center; }
+            .nav-logo-name { font-size: 1rem; }
+            .nav-back { padding: 8px 12px; font-size: 0.8rem; }
+            .project-box { padding: 28px 20px; }
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <!-- ══ NAVBAR ══ -->
+    <nav>
+        <h:link outcome="/index" styleClass="nav-logo">
+            <h:graphicImage library="images" name="Logo.jpeg"
+                            styleClass="nav-logo-img" alt="RIMBERIO" />
+            <div class="nav-logo-text">
+                <span class="nav-logo-name">RIM<span>BERIO</span></span>
+                <span class="nav-logo-tagline">Gestion intelligente</span>
+            </div>
+        </h:link>
+
+        <h:link outcome="/index" styleClass="nav-back">
+            <i data-lucide="arrow-left"> </i> Retour à l'accueil
+        </h:link>
+    </nav>
+
+    <main>
+
+        <!-- ══ HERO ══ -->
+        <section class="hero">
+            <div class="hero-badge">
+                <i data-lucide="users"> </i>
+                À propos du projet
+            </div>
+
+            <h1>
+                Les personnes derrière <span class="hl-o">RIMBERIO</span><br/>
+                et l'<span class="hl-v">encadrement</span> du projet
+            </h1>
+
+            <p>
+                Cette application web a été réalisée dans le cadre d'un mini-projet Java EE.
+                Elle a pour objectif de proposer une gestion claire, moderne et structurée
+                d'un café / restaurant à travers JSF et Hibernate.
+            </p>
+        </section>
+
+        <!-- ══ STATS BAND ══ -->
+        <div class="stats-band">
+            <div class="stat-pill">
+                <i data-lucide="graduation-cap" style="color:#F28C28"> </i>
+                <span class="sp-num">2</span> Étudiantes
+            </div>
+            <div class="stat-pill">
+                <i data-lucide="shield-check" style="color:#2E7D32"> </i>
+                <span class="sp-num">1</span> Encadrante
+            </div>
+            <div class="stat-pill">
+                <i data-lucide="layers" style="color:#9A7200"> </i>
+                <span class="sp-num">6</span> Modules développés
+            </div>
+            <div class="stat-pill">
+                <i data-lucide="building-2" style="color:#F28C28"> </i>
+                ENSA Tanger · 2025–2026
+            </div>
+        </div>
+
+        <!-- ══ CARDS ÉQUIPE ══ -->
+        <section class="cards-grid">
+
+            <!-- Manar -->
+            <article class="member-card">
+                <div class="card-top-line top-manar"> </div>
+                <div class="card-body">
+                    <div class="avatar-wrap avatar-manar">
+                        <div class="avatar-inner">
+                            <h:graphicImage library="images" name="Manar photo.png"
+                                            alt="Photo de Manar" />
+                        </div>
+                    </div>
+                    <div class="role-chip chip-manar">
+                        <i data-lucide="user"> </i> Étudiante
+                    </div>
+                    <div class="member-name">Manar Ouahabi</div>
+                    <div class="member-sub">
+                        <i data-lucide="map-pin"> </i>
+                        Mini-projet Java EE · ENSA Tanger
+                    </div>
+                    <div class="mini-divider div-manar"> </div>
+                    <p class="member-desc">
+                        A contribué à la conception d'une interface claire,
+                        cohérente et adaptée à une application de gestion de café / restaurant.
+                    </p>
+                    <div class="skill-tags">
+                        <span class="skill-tag">JSF</span>
+                        <span class="skill-tag">Hibernate</span>
+                        <span class="skill-tag">Java EE</span>
+                        <span class="skill-tag">UI Design</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Sara -->
+            <article class="member-card">
+                <div class="card-top-line top-sara"> </div>
+                <div class="card-body">
+                    <div class="avatar-wrap avatar-sara">
+                        <div class="avatar-inner">
+                            <h:graphicImage library="images" name="Sara photo.jpeg"
+                                            alt="Photo de Sara" />
+                        </div>
+                    </div>
+                    <div class="role-chip chip-sara">
+                        <i data-lucide="user"> </i> Étudiante
+                    </div>
+                    <div class="member-name">Sara Laaroussi</div>
+                    <div class="member-sub">
+                        <i data-lucide="map-pin"> </i>
+                        Mini-projet Java EE · ENSA Tanger
+                    </div>
+                    <div class="mini-divider div-sara"> </div>
+                    <p class="member-desc">
+                        A participé à la structuration du projet pour proposer
+                        une application organisée, simple à utiliser et bien présentée.
+                    </p>
+                    <div class="skill-tags">
+                        <span class="skill-tag">JSF</span>
+                        <span class="skill-tag">Hibernate</span>
+                        <span class="skill-tag">Java EE</span>
+                        <span class="skill-tag">MVC</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Encadrante -->
+            <article class="member-card">
+                <div class="card-top-line top-prof"> </div>
+                <div class="card-body">
+                    <div class="avatar-wrap avatar-prof">
+                        <div class="avatar-inner">
+                            <h:graphicImage library="images" name="encadrante.jpeg"
+                                            alt="Photo de l'encadrante" />
+                        </div>
+                    </div>
+                    <div class="role-chip chip-prof">
+                        <i data-lucide="award"> </i> Encadrante
+                    </div>
+                    <div class="member-name">Houda Belmokadem</div>
+                    <div class="member-sub">
+                        <i data-lucide="map-pin"> </i>
+                        Module Java EE · ENSA Tanger
+                    </div>
+                    <div class="mini-divider div-prof"> </div>
+                    <p class="member-desc">
+                        A encadré la réalisation du projet et orienté le travail
+                        vers une solution académique structurée et professionnelle.
+                    </p>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Jakarta EE</span>
+                        <span class="skill-tag">Architecture MVC</span>
+                        <span class="skill-tag">ORM</span>
+                    </div>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- ══ PROJECT BOX ══ -->
+        <section class="project-box">
+            <div class="project-box-icon">
+                <i data-lucide="coffee"> </i>
+            </div>
+            <h2>Notre projet</h2>
+            <p>
+                RIMBERIO est une application web de gestion d'un café / restaurant
+                conçue pour centraliser les réservations, les commandes, la gestion des tables
+                et l'organisation du service dans une interface moderne, claire et intuitive.
+            </p>
+            <div class="project-tech">
+                <span class="tech-badge">JSF</span>
+                <span class="tech-badge">Hibernate</span>
+                <span class="tech-badge">Jakarta EE</span>
+                <span class="tech-badge">MVC</span>
+                <span class="tech-badge">ORM</span>
+                <span class="tech-badge">Java EE</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo-wrap">
+                <h:graphicImage library="images" name="Logo.jpeg"
+                                styleClass="footer-logo-img" alt="RIMBERIO" />
+                <span class="footer-logo-name">RIM<span>BERIO</span></span>
+            </div>
+
+            <div class="footer-copy">© 2025–2026 RIMBERIO — ENSA Tanger</div>
+
+            <div class="footer-links">
+                <h:link outcome="/index">
+                    <i data-lucide="home"> </i> Accueil
+                </h:link>
+                <h:link outcome="/pages/auth/login">
+                    <i data-lucide="log-in"> </i> Connexion
+                </h:link>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lucide.createIcons();
+        });
+    </script>
+
+</h:body>
+</html>
