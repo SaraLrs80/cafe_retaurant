@@ -1,0 +1,543 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+<h:head>
+    <title>Rimberio — Connexion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Inter:wght@300;400;500;600&amp;display=swap"
+          rel="stylesheet"/>
+    <style type="text/css">
+        :root {
+            --orange:       #E8470A;
+            --orange-light: #F28C28;
+            --orange-bg:    #FFF3EC;
+            --green:        #2E7D32;
+            --green-light:  #4CAF50;
+            --green-bg:     #F1F8E9;
+            --dark:         #1A1208;
+            --cream:        #FDFAF5;
+            --muted:        #7A7060;
+            --border:       #E8E0D0;
+            --white:        #FFFFFF;
+            --error:        #C0392B;
+            --shadow:       0 20px 60px rgba(26,18,8,.13);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cream);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(232,71,10,.07) 0%, transparent 60%),
+                    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(46,125,50,.06) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .back-home {
+            position: fixed; top: 20px; left: 24px; z-index: 10;
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 50px;
+            font-size: .82rem; font-weight: 500;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all .2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        }
+        .back-home:hover { border-color: var(--orange); color: var(--orange); transform: translateX(-2px); }
+        .back-home svg { flex-shrink: 0; }
+
+        .auth-card {
+            position: relative; z-index: 1;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            width: min(480px, 100%);
+            overflow: hidden;
+            animation: fadeUp .5s cubic-bezier(.22,.68,0,1.2) both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+            padding: 32px 40px 28px;
+            text-align: center;
+        }
+
+        .logo-wrap {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 8px;
+        }
+
+        /* ── Logo image au lieu de l'emoji ── */
+        .logo-img {
+            width: 52px; height: 52px;
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+            flex-shrink: 0;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .logo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: white;
+            letter-spacing: .02em;
+        }
+
+        .logo-sub {
+            font-size: .78rem;
+            color: rgba(255,255,255,.8);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,.15);
+            border-radius: 10px;
+            padding: 4px;
+            margin-top: 20px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px 0;
+            border: none; background: transparent;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: .85rem; font-weight: 500;
+            color: rgba(255,255,255,.75);
+            cursor: pointer; transition: all .2s;
+        }
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
+        }
+
+        .card-body { padding: 32px 40px 36px; }
+
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem; color: var(--dark);
+            margin-bottom: 4px;
+        }
+        .form-subtitle { font-size: .82rem; color: var(--muted); margin-bottom: 24px; }
+
+        .field { margin-bottom: 16px; }
+        .field label {
+            display: block; font-size: .78rem;
+            font-weight: 600; color: var(--dark);
+            margin-bottom: 6px; letter-spacing: .03em;
+            text-transform: uppercase;
+        }
+        .field-wrap { position: relative; }
+        .field-icon {
+            position: absolute; left: 13px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted); pointer-events: none;
+            display: flex; align-items: center;
+        }
+        .field-icon svg { width: 16px; height: 16px; }
+
+        .jsf-input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            background: var(--cream);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: .88rem; color: var(--dark);
+            outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+        .jsf-input:focus {
+            border-color: var(--orange);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(232,71,10,.1);
+        }
+        .jsf-input::placeholder { color: rgba(122,112,96,.45); }
+
+        .pass-wrap { position: relative; }
+        .pass-wrap .jsf-input { padding-right: 44px; }
+        .eye-btn {
+            position: absolute; right: 13px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none;
+            cursor: pointer; color: var(--muted);
+            display: flex; align-items: center;
+            padding: 0; transition: color .2s;
+        }
+        .eye-btn:hover { color: var(--orange); }
+        .eye-btn svg { width: 18px; height: 18px; }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .forgot { text-align: right; margin-top: -8px; margin-bottom: 20px; }
+        .forgot a { font-size: .78rem; color: var(--muted); text-decoration: none; transition: color .2s; }
+        .forgot a:hover { color: var(--orange); }
+
+        .btn-login {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: .92rem; font-weight: 600;
+            cursor: pointer; transition: all .25s;
+            letter-spacing: .02em;
+        }
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,71,10,.3); }
+
+        .btn-register {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: .92rem; font-weight: 600;
+            cursor: pointer; transition: all .25s;
+            letter-spacing: .02em;
+        }
+        .btn-register:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(46,125,50,.3); }
+
+        .error-msg {
+            color: var(--error); font-size: .82rem;
+            margin-bottom: 14px; padding: 10px 14px;
+            background: rgba(192,57,43,.06);
+            border-radius: 8px; border-left: 3px solid var(--error);
+            display: block;
+        }
+        .field-error { color: var(--error); font-size: .75rem; margin-top: 4px; display: block; }
+
+        .card-footer {
+            padding: 16px 40px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: .78rem; color: var(--muted);
+        }
+
+        @media (max-width: 500px) {
+            .card-body { padding: 24px 24px 28px; }
+            .card-header { padding: 24px 24px 20px; }
+            .card-footer { padding: 14px 24px; }
+            .field-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</h:head>
+<h:body>
+
+    <a href="#{request.contextPath}/" class="back-home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Accueil
+    </a>
+
+    <div class="auth-card">
+
+        <!-- ══ Header avec vrai logo ══ -->
+        <div class="card-header">
+            <div class="logo-wrap">
+                <div class="logo-img">
+                    <h:graphicImage library="images" name="Logo.jpeg" alt="Rimberio"/>
+                </div>
+                <span class="logo-name">Rimberio</span>
+            </div>
+            <div class="logo-sub">Café / Restaurant</div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login', this)">
+                    Connexion
+                </button>
+                <button class="tab-btn" onclick="switchTab('register', this)">
+                    Inscription
+                </button>
+            </div>
+        </div>
+
+        <!-- ══ Body ══ -->
+        <div class="card-body">
+
+            <!-- ════ CONNEXION ════ -->
+            <div id="tab-login" class="form-section active">
+                <p class="form-title">Bon retour !</p>
+                <p class="form-subtitle">Connectez-vous pour accéder à votre espace.</p>
+
+                <h:form id="loginForm">
+                    <h:messages globalOnly="true" styleClass="error-msg"
+                                showSummary="true" showDetail="false"/>
+
+                    <div class="field">
+                        <label for="loginEmail">Adresse email</label>
+                        <div class="field-wrap">
+                            <span class="field-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                </svg>
+                            </span>
+                            <h:inputText id="loginEmail" value="#{authBean.email}"
+                                         styleClass="jsf-input"
+                                         placeholder="votre@email.com"
+                                         required="true" requiredMessage="Email requis.">
+                                <f:validateRegex pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"/>
+                            </h:inputText>
+                        </div>
+                        <h:message for="loginEmail" styleClass="field-error"/>
+                    </div>
+
+                    <div class="field">
+                        <label for="loginPass">Mot de passe</label>
+                        <div class="field-wrap pass-wrap">
+                            <span class="field-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </span>
+                            <h:inputSecret id="loginPass" value="#{authBean.password}"
+                                           styleClass="jsf-input"
+                                           placeholder="••••••••"
+                                           required="true" requiredMessage="Mot de passe requis."/>
+                            <button type="button" class="eye-btn"
+                                    onclick="togglePass('loginForm:loginPass', this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <h:message for="loginPass" styleClass="field-error"/>
+                    </div>
+
+                    <div class="forgot">
+                        <a href="#">Mot de passe oublié ?</a>
+                    </div>
+
+                    <h:commandButton value="Se connecter" action="#{authBean.login}"
+                                     styleClass="btn-login"/>
+                </h:form>
+            </div>
+
+            <!-- ════ INSCRIPTION ════ -->
+            <div id="tab-register" class="form-section">
+                <p class="form-title">Créer un compte</p>
+                <p class="form-subtitle">Rejoignez Rimberio en quelques secondes.</p>
+
+                <h:form id="registerForm">
+                    <h:messages globalOnly="true" styleClass="error-msg"
+                                showSummary="true" showDetail="false"/>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="regNom">Nom</label>
+                            <div class="field-wrap">
+                                <span class="field-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </span>
+                                <h:inputText id="regNom" value="#{authBean.nom}"
+                                             styleClass="jsf-input" placeholder="Dupont"
+                                             required="true" requiredMessage="Nom requis."/>
+                            </div>
+                            <h:message for="regNom" styleClass="field-error"/>
+                        </div>
+                        <div class="field">
+                            <label for="regPrenom">Prénom</label>
+                            <div class="field-wrap">
+                                <span class="field-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </span>
+                                <h:inputText id="regPrenom" value="#{authBean.prenom}"
+                                             styleClass="jsf-input" placeholder="Marie"
+                                             required="true" requiredMessage="Prénom requis."/>
+                            </div>
+                            <h:message for="regPrenom" styleClass="field-error"/>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="regEmail">Adresse email</label>
+                        <div class="field-wrap">
+                            <span class="field-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                </svg>
+                            </span>
+                            <h:inputText id="regEmail" value="#{authBean.email}"
+                                         styleClass="jsf-input" placeholder="votre@email.com"
+                                         required="true" requiredMessage="Email requis.">
+                                <f:validateRegex pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"/>
+                            </h:inputText>
+                        </div>
+                        <h:message for="regEmail" styleClass="field-error"/>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="regTel">Téléphone</label>
+                            <div class="field-wrap">
+                                <span class="field-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/>
+                                    </svg>
+                                </span>
+                                <h:inputText id="regTel" value="#{authBean.telephone}"
+                                             styleClass="jsf-input" placeholder="0612345678"
+                                             required="true" requiredMessage="Téléphone requis."/>
+                            </div>
+                            <h:message for="regTel" styleClass="field-error"/>
+                        </div>
+                        <div class="field">
+                            <label for="regDob">Date de naissance</label>
+                            <div class="field-wrap">
+                                <span class="field-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                </span>
+                                <h:inputText id="regDob" value="#{authBean.dateNaissance}"
+                                             styleClass="jsf-input" placeholder="jj/mm/aaaa"
+                                             required="true" requiredMessage="Date requise.">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:inputText>
+                            </div>
+                            <h:message for="regDob" styleClass="field-error"/>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="regPass">Mot de passe</label>
+                        <div class="field-wrap pass-wrap">
+                            <span class="field-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </span>
+                            <h:inputSecret id="regPass" value="#{authBean.password}"
+                                           styleClass="jsf-input" placeholder="••••••••"
+                                           required="true" requiredMessage="Mot de passe requis."/>
+                            <button type="button" class="eye-btn"
+                                    onclick="togglePass('registerForm:regPass', this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <h:message for="regPass" styleClass="field-error"/>
+                    </div>
+
+                    <h:commandButton value="Créer mon compte" action="#{authBean.register}"
+                                     styleClass="btn-register"/>
+                </h:form>
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+            Rimberio Café / Restaurant — © 2026
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+            document.querySelectorAll('.form-section').forEach(function(s) { s.classList.remove('active'); });
+            btn.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function togglePass(inputId, btn) {
+            var input = document.getElementById(inputId);
+            if (!input) return;
+            var isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            var svg = btn.querySelector('svg');
+            if (isPassword) {
+                svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ouvrir onglet inscription si paramètre tab=register
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('tab') === 'register') {
+                var registerBtn = document.querySelectorAll('.tab-btn')[1];
+                if (registerBtn) switchTab('register', registerBtn);
+            }
+
+            document.querySelectorAll('.jsf-input').forEach(function(el) {
+                el.addEventListener('focus', function() {
+                    this.style.borderColor = '#E8470A';
+                    this.style.boxShadow   = '0 0 0 3px rgba(232,71,10,.1)';
+                    this.style.background  = '#FFFFFF';
+                });
+                el.addEventListener('blur', function() {
+                    this.style.borderColor = '#E8E0D0';
+                    this.style.boxShadow   = 'none';
+                    this.style.background  = '#FDFAF5';
+                });
+            });
+        });
+    </script>
+
+</h:body>
+</html>

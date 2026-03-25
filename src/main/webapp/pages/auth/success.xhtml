@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html">
+<h:head>
+    <title>Rimberio — Connexion réussie</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="refresh" content="2;url=#{request.contextPath}/pages/client/dashboard.xhtml"/>
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+            background: #FDFAF5;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; margin: 0;
+        }
+        .box {
+            text-align: center;
+            background: white;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+        }
+        .box h2 { color: #1A1208; margin-bottom: 8px; }
+        .box p  { color: #8C6B50; font-size: 0.9rem; }
+    </style>
+</h:head>
+<h:body>
+    <div class="box">
+        <h2>Connexion réussie !</h2>
+        <p>Bienvenue <h:outputText value="#{authBean.currentUser.prenom}"/> — redirection en cours...</p>
+    </div>
+</h:body>
+</html>
