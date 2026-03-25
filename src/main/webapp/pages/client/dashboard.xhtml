@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/templates/clientLayout.xhtml">
+
+    <ui:define name="pageTitle">Mon Tableau de Bord</ui:define>
+
+    <ui:define name="content">
+
+        <!-- Bienvenue -->
+        <div style="margin-bottom:24px;">
+            <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--dark);margin-bottom:4px;">
+                Bonjour,
+                <h:outputText value="#{authBean.currentUser.prenom}"/> 👋
+            </h2>
+
+            <p style="font-size:.85rem;color:var(--muted);">
+                Voici un aperçu de votre activité chez Rimberio.
+            </p>
+        </div>
+
+        <!-- STATISTIQUES -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{clientDashboardBean.nbReservationsActives}"/>
+                    </div>
+                    <div class="stat-label">Réservations actives</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{clientDashboardBean.nbCommandesEnCours}"/>
+                    </div>
+                    <div class="stat-label">Commandes en cours</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{clientDashboardBean.nbCommandesTotal}"/>
+                    </div>
+                    <div class="stat-label">Commandes au total</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-value">
+                        <h:outputText value="#{clientDashboardBean.nbReservationsTotal}"/>
+                    </div>
+                    <div class="stat-label">Réservations au total</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PROCHAINES RESERVATIONS + DERNIERES COMMANDES -->
+        <div class="grid-2" style="margin-bottom:20px;">
+
+            <!-- PROCHAINES RESERVATIONS -->
+            <div class="card">
+
+                <div class="card-head">
+                    <span class="card-head-title">Prochaines Réservations</span>
+                    <h:link outcome="/pages/client/reservations" styleClass="btn btn-secondary btn-sm">
+                        Voir tout
+                    </h:link>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Table</th>
+                        <th>Statut</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <ui:repeat value="#{clientDashboardBean.prochainesReservations}" var="r">
+                        <tr>
+
+                            <td>
+                                <h:outputText value="#{r.dateReservationFormatted}"/>
+                            </td>
+
+                            <td>
+                                <h:outputText value="#{r.heureReservationFormatted}"/>
+                            </td>
+
+                            <td>
+                                Table
+                                <h:outputText value="#{r.table != null ? r.table.numeroTable : '—'}"/>
+                            </td>
+
+                            <td>
+                                <span class="badge
+                                    #{r.statut.name() == 'CONFIRMEE' ? 'badge-success' :
+                                      r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' :
+                                      'badge-danger'}">
+                                    <h:outputText value="#{r.statut}"/>
+                                </span>
+                            </td>
+
+                        </tr>
+                    </ui:repeat>
+
+                    <ui:fragment rendered="#{empty clientDashboardBean.prochainesReservations}">
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <p>Aucune réservation à venir</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </ui:fragment>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- DERNIERES COMMANDES -->
+            <div class="card">
+
+                <div class="card-head">
+                    <span class="card-head-title">Mes Dernières Commandes</span>
+                    <h:link outcome="/pages/client/commandes" styleClass="btn btn-secondary btn-sm">
+                        Voir tout
+                    </h:link>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Date</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <ui:repeat value="#{clientDashboardBean.dernieresCommandes}" var="c">
+                        <tr>
+
+                            <td>
+                                #<h:outputText value="#{c.idCommande}"/>
+                            </td>
+
+                            <td>
+                                <h:outputText value="#{c.dateCommandeFormatted}"/>
+                            </td>
+
+                            <td>
+                                <h:outputText value="#{c.montantTotal}">
+                                    <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                </h:outputText>
+                                MAD
+                            </td>
+
+                            <td>
+                                <span class="badge
+                                    #{c.statut.name() == 'PAYEE' ? 'badge-success' :
+                                      c.statut.name() == 'EN_COURS' ? 'badge-warning' :
+                                      c.statut.name() == 'EN_ATTENTE' ? 'badge-muted' :
+                                      c.statut.name() == 'ANNULEE' ? 'badge-danger' :
+                                      'badge-info'}">
+                                    <h:outputText value="#{c.statut}"/>
+                                </span>
+                            </td>
+
+                        </tr>
+                    </ui:repeat>
+
+                    <ui:fragment rendered="#{empty clientDashboardBean.dernieresCommandes}">
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <p>Aucune commande passée</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </ui:fragment>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+</html>
