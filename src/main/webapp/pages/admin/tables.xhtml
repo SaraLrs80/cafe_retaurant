@@ -11,7 +11,159 @@
 
     <ui:define name="content">
 
-        <!-- ══ Header ══ -->
+        <style type="text/css">
+            .table-stat-icon {
+                width: 58px;
+                height: 58px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .table-stat-icon svg {
+                width: 24px;
+                height: 24px;
+                stroke-width: 2;
+            }
+
+            .table-card-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 18px;
+                margin-bottom: 24px;
+            }
+
+            .table-card {
+                background: white;
+                border-radius: 16px;
+                padding: 22px 18px 18px;
+                text-align: center;
+                transition: all .2s ease;
+                border: 1.5px solid var(--border);
+                box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+            }
+
+            .table-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            }
+
+            .table-card.disponible {
+                border-color: #CFE8D2;
+            }
+
+            .table-card.occupee {
+                border-color: #F7C9CD;
+            }
+
+            .table-card.reservee {
+                border-color: #CFE1F7;
+            }
+
+            .table-card-icon-wrap {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 14px;
+                border-radius: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .table-card-icon-wrap svg {
+                width: 28px;
+                height: 28px;
+                stroke-width: 2;
+            }
+
+            .table-card.disponible .table-card-icon-wrap {
+                background: #EDF8EF;
+                color: #2D7D46;
+            }
+
+            .table-card.occupee .table-card-icon-wrap {
+                background: #FFF1EF;
+                color: #E8510A;
+            }
+
+            .table-card.reservee .table-card-icon-wrap {
+                background: #EEF6FD;
+                color: #1A6B9A;
+            }
+
+            .table-card-title {
+                font-weight: 700;
+                font-size: 1.05rem;
+                color: var(--dark);
+                margin-bottom: 4px;
+            }
+
+            .table-card-meta {
+                font-size: .82rem;
+                color: var(--muted);
+                margin-bottom: 10px;
+                line-height: 1.45;
+            }
+
+            .table-actions {
+                margin-top: 14px;
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .table-action-btn {
+                min-width: 42px;
+                height: 36px;
+                border-radius: 10px;
+                border: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all .2s ease;
+                padding: 0 12px;
+            }
+
+            .table-action-btn svg {
+                width: 16px;
+                height: 16px;
+                stroke-width: 2;
+            }
+
+            .table-action-edit {
+                background: #F8F4EE;
+                color: #6B5B4B;
+                border: 1px solid #E9DCCB;
+            }
+
+            .table-action-edit:hover {
+                background: #F2E8DA;
+            }
+
+            .table-action-delete {
+                background: #FFF1F3;
+                color: #D14D61;
+                border: 1px solid #F4CCD4;
+            }
+
+            .table-action-delete:hover {
+                background: #FDE6EA;
+            }
+
+            .modal-field-label {
+                font-size: .78rem;
+                font-weight: 600;
+                display: block;
+                margin-bottom: 5px;
+                color: var(--dark);
+            }
+        </style>
+
+        <!-- Header -->
         <div class="section-header" style="margin-bottom:20px;">
             <div>
                 <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Tables du restaurant</h2>
@@ -26,76 +178,135 @@
             </h:form>
         </div>
 
-        <!-- ══ Stats rapides ══ -->
+        <!-- Stats rapides -->
         <div class="stats-grid" style="margin-bottom:20px;">
+
             <div class="stat-card">
-                <div class="stat-icon green"><span style="font-size:1.2rem;font-weight:700;color:#2D7D46;">D</span></div>
+                <div class="table-stat-icon" style="background:#EDF8EF;color:#2D7D46;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="8"></circle>
+                        <path d="M9.5 12l1.7 1.7 3.3-3.7"></path>
+                    </svg>
+                </div>
                 <div class="stat-info">
-                    <div class="stat-value"><h:outputText value="#{tableBean.nbDisponibles}"/></div>
+                    <div class="stat-value">
+                        <h:outputText value="#{tableBean.nbDisponibles}"/>
+                    </div>
                     <div class="stat-label">Disponibles</div>
                 </div>
             </div>
+
             <div class="stat-card">
-                <div class="stat-icon orange"><span style="font-size:1.2rem;font-weight:700;color:#E8510A;">O</span></div>
+                <div class="table-stat-icon" style="background:#FFF1EF;color:#E8510A;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="8"></circle>
+                        <path d="M9 9l6 6"></path>
+                        <path d="M15 9l-6 6"></path>
+                    </svg>
+                </div>
                 <div class="stat-info">
-                    <div class="stat-value"><h:outputText value="#{tableBean.nbOccupees}"/></div>
+                    <div class="stat-value">
+                        <h:outputText value="#{tableBean.nbOccupees}"/>
+                    </div>
                     <div class="stat-label">Occupées</div>
                 </div>
             </div>
+
             <div class="stat-card">
-                <div class="stat-icon blue"><span style="font-size:1.2rem;font-weight:700;color:#1A6B9A;">R</span></div>
+                <div class="table-stat-icon" style="background:#EEF6FD;color:#1A6B9A;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M8 7V5a4 4 0 1 1 8 0v2"></path>
+                        <rect x="5" y="7" width="14" height="12" rx="2"></rect>
+                    </svg>
+                </div>
                 <div class="stat-info">
-                    <div class="stat-value"><h:outputText value="#{tableBean.nbReservees}"/></div>
+                    <div class="stat-value">
+                        <h:outputText value="#{tableBean.nbReservees}"/>
+                    </div>
                     <div class="stat-label">Réservées</div>
                 </div>
             </div>
+
             <div class="stat-card">
-                <div class="stat-icon purple"><span style="font-size:1.2rem;font-weight:700;color:#7C3AED;">T</span></div>
+                <div class="table-stat-icon" style="background:#F3EEFF;color:#7C3AED;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="4" y="7" width="16" height="3" rx="1.5"></rect>
+                        <path d="M6 10v7"></path>
+                        <path d="M18 10v7"></path>
+                        <path d="M9 17H5"></path>
+                        <path d="M19 17h-4"></path>
+                    </svg>
+                </div>
                 <div class="stat-info">
-                    <div class="stat-value"><h:outputText value="#{tableBean.totalTables}"/></div>
+                    <div class="stat-value">
+                        <h:outputText value="#{tableBean.totalTables}"/>
+                    </div>
                     <div class="stat-label">Total</div>
                 </div>
             </div>
+
         </div>
 
-        <!-- ══ Grille des tables ══ -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+        <!-- Grille des tables -->
+        <div class="table-card-grid">
             <ui:repeat value="#{tableBean.tables}" var="t">
-                <div style="background:white;border-radius:12px;padding:20px;
-                             border:1.5px solid #{t.statut.name() == 'DISPONIBLE' ? '#C8E6C9' :
-                                                  t.statut.name() == 'OCCUPEE'    ? '#FFCDD2' : '#BBDEFB'};
-                             text-align:center;transition:all .2s;">
-                    <div style="font-size:2rem;margin-bottom:8px;"><span style="font-size:1.2rem;font-weight:700;color:#2D7D46;">D</span></div>
-                    <div style="font-weight:700;font-size:1rem;color:var(--dark);margin-bottom:4px;">
+                <div class="table-card #{t.statut.name() == 'DISPONIBLE' ? 'disponible' : t.statut.name() == 'OCCUPEE' ? 'occupee' : 'reservee'}">
+
+                    <div class="table-card-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="4" y="7" width="16" height="3" rx="1.5"></rect>
+                            <path d="M6 10v7"></path>
+                            <path d="M18 10v7"></path>
+                            <path d="M9 17H5"></path>
+                            <path d="M19 17h-4"></path>
+                        </svg>
+                    </div>
+
+                    <div class="table-card-title">
                         Table <h:outputText value="#{t.numeroTable}"/>
                     </div>
-                    <div style="font-size:.78rem;color:var(--muted);margin-bottom:8px;">
+
+                    <div class="table-card-meta">
                         <h:outputText value="#{t.capacite}"/> personnes
-                        <ui:fragment rendered="#{t.emplacement != null}">
+                        <ui:fragment rendered="#{t.emplacement != null and not empty t.emplacement}">
                             · <h:outputText value="#{t.emplacement}"/>
                         </ui:fragment>
                     </div>
+
                     <span class="badge
                         #{t.statut.name() == 'DISPONIBLE' ? 'badge-success' :
                           t.statut.name() == 'OCCUPEE'    ? 'badge-danger'  : 'badge-info'}">
-                        <h:outputText value="#{t.statut}"/>
+                        <h:outputText value="#{t.statut.name() == 'DISPONIBLE' ? 'DISPONIBLE' :
+                                               t.statut.name() == 'OCCUPEE' ? 'OCCUPÉE' :
+                                               'RÉSERVÉE'}"/>
                     </span>
-                    <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;">
-                        <h:form>
-                            <h:commandButton value="✏" title="Modifier"
-                                             action="#{tableBean.editer(t)}"
-                                             styleClass="btn btn-secondary btn-sm"/>
-                            <h:commandButton value="🗑" title="Supprimer"
-                                             action="#{tableBean.supprimer(t.idTable)}"
-                                             styleClass="btn btn-danger btn-sm"
-                                             onclick="return confirm('Supprimer cette table ?')"/>
+
+                    <div class="table-actions">
+                        <h:form style="display:flex;gap:8px;justify-content:center;">
+
+                            <h:commandButton action="#{tableBean.editer(t)}"
+                                             styleClass="table-action-btn table-action-edit"
+                                             title="Modifier">
+                                <f:passThroughAttribute name="type" value="submit"/>
+                                <f:passThroughAttribute name="value" value="Modifier"/>
+                            </h:commandButton>
+
+                            <h:commandButton action="#{tableBean.supprimer(t.idTable)}"
+                                             styleClass="table-action-btn table-action-delete"
+                                             onclick="return confirm('Supprimer cette table ?')"
+                                             title="Supprimer">
+                                <f:passThroughAttribute name="type" value="submit"/>
+                                <f:passThroughAttribute name="value" value="Supprimer"/>
+                            </h:commandButton>
+
                         </h:form>
                     </div>
+
                 </div>
             </ui:repeat>
         </div>
 
-        <!-- ══ Modal Ajouter/Modifier ══ -->
+        <!-- Modal Ajouter/Modifier -->
         <ui:fragment rendered="#{tableBean.showForm}">
             <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);
                         display:flex;align-items:center;justify-content:center;z-index:200;">
@@ -105,51 +316,50 @@
                                 margin-bottom:20px;color:var(--dark);">
                         <h:outputText value="#{tableBean.modeEdition ? 'Modifier' : 'Ajouter'} une table"/>
                     </h3>
+
                     <h:form>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
                             <div>
-                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
-                                    Numéro de table
-                                </label>
+                                <label class="modal-field-label">Numéro de table</label>
                                 <h:inputText value="#{tableBean.selectedTable.numeroTable}"
                                              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
                                                     border-radius:8px;font-size:.85rem;outline:none;"
                                              required="true"/>
                             </div>
                             <div>
-                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
-                                    Capacité
-                                </label>
+                                <label class="modal-field-label">Capacité</label>
                                 <h:inputText value="#{tableBean.selectedTable.capacite}"
                                              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
                                                     border-radius:8px;font-size:.85rem;outline:none;"
                                              required="true"/>
                             </div>
                         </div>
+
                         <div style="margin-bottom:14px;">
-                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
-                                Emplacement (optionnel)
-                            </label>
+                            <label class="modal-field-label">Emplacement (optionnel)</label>
                             <h:inputText value="#{tableBean.selectedTable.emplacement}"
                                          placeholder="Ex: Terrasse, Salle principale..."
                                          style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
                                                 border-radius:8px;font-size:.85rem;outline:none;"/>
                         </div>
+
                         <div style="margin-bottom:20px;">
-                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">
-                                Statut
-                            </label>
+                            <label class="modal-field-label">Statut</label>
                             <h:selectOneMenu value="#{tableBean.selectedTable.statut}"
                                              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);
                                                     border-radius:8px;font-size:.85rem;outline:none;">
                                 <f:selectItem itemValue="DISPONIBLE" itemLabel="Disponible"/>
-                                <f:selectItem itemValue="OCCUPEE"    itemLabel="Occupée"/>
-                                <f:selectItem itemValue="RESERVEE"   itemLabel="Réservée"/>
+                                <f:selectItem itemValue="OCCUPEE" itemLabel="Occupée"/>
+                                <f:selectItem itemValue="RESERVEE" itemLabel="Réservée"/>
                             </h:selectOneMenu>
                         </div>
+
                         <div style="display:flex;gap:10px;justify-content:flex-end;">
-                            <h:commandButton value="Annuler" action="#{tableBean.annuler}"
-                                             styleClass="btn btn-secondary" immediate="true"/>
+                            <h:commandButton value="Annuler"
+                                             action="#{tableBean.annuler}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"/>
+
                             <h:commandButton value="#{tableBean.modeEdition ? 'Modifier' : 'Enregistrer'}"
                                              action="#{tableBean.sauvegarder}"
                                              styleClass="btn btn-primary"/>

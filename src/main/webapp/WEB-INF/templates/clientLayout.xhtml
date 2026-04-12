@@ -38,13 +38,13 @@
         }
 
         html, body { height: 100%; }
-
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--cream);
             color: var(--dark);
-            display: flex;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 100%;
         }
 
         /* ══ SIDEBAR ══ */
@@ -237,11 +237,12 @@
         /* ══ MAIN ══ */
         .main-wrapper {
             margin-left: 260px;
-            flex: 1;
+            width: calc(100vw - 260px);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .topbar {
@@ -289,7 +290,14 @@
             50%      { opacity:0.5; transform:scale(1.35); }
         }
 
-        .page-content { padding: 28px 32px; flex: 1; }
+        .page-content {
+            padding: 28px 32px;
+            flex: 1;
+            width: 100%;
+            max-width: none;
+            min-height: calc(100vh - 64px);
+            overflow: visible;
+        }
 
         /* ══ CARDS ══ */
         .card {
@@ -539,8 +547,9 @@
     </style>
 </h:head>
 
+
 <h:body>
-    <div style="display:flex;min-height:100vh;">
+    <div style="display:flex;min-height:100vh;width:100%;">
 
         <!-- ══ SIDEBAR ══ -->
         <aside class="sidebar">

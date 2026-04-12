@@ -11,13 +11,91 @@
 
     <ui:define name="content">
 
+        <style type="text/css">
+            .action-btn-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            }
+
+            .action-btn-icon svg {
+                width: 14px;
+                height: 14px;
+                stroke-width: 2;
+                flex-shrink: 0;
+            }
+
+            .table-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                background: #FDF2EA;
+                color: #C96A11;
+                font-size: .78rem;
+                font-weight: 600;
+                line-height: 1;
+            }
+
+            .table-chip svg {
+                width: 13px;
+                height: 13px;
+                stroke-width: 2;
+                flex-shrink: 0;
+            }
+
+            .table-meta {
+                font-size: .75rem;
+                color: var(--muted);
+                margin-top: 4px;
+            }
+
+            .client-name {
+                font-weight: 600;
+                font-size: .9rem;
+                color: var(--dark);
+            }
+
+            .client-phone {
+                font-size: .76rem;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+
+            .reservation-date,
+            .reservation-time {
+                font-size: .86rem;
+                font-weight: 500;
+                color: var(--dark);
+            }
+
+            .actions-group {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            .modal-field-label {
+                font-size: .78rem;
+                font-weight: 600;
+                display: block;
+                margin-bottom: 5px;
+                color: var(--dark);
+            }
+        </style>
+
         <div class="section-header" style="margin-bottom:20px;">
             <div>
                 <h2 style="font-size:1.1rem;font-weight:600;color:var(--dark);">Réservations</h2>
                 <p style="font-size:.8rem;color:var(--muted);margin-top:2px;">Gérez toutes les réservations du restaurant</p>
             </div>
             <h:form>
-                <h:commandButton value="+ Nouvelle réservation" action="#{reservationBean.nouvelleReservation}" styleClass="btn btn-primary"/>
+                <h:commandButton value="+ Nouvelle réservation"
+                                 action="#{reservationBean.nouvelleReservation}"
+                                 styleClass="btn btn-primary"/>
             </h:form>
         </div>
 
@@ -31,6 +109,7 @@
                                      style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"
                                      placeholder="yyyy-MM-dd"/>
                     </div>
+
                     <h:selectOneMenu value="#{reservationBean.filtreStatut}"
                                      style="padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;">
                         <f:selectItem itemValue="" itemLabel="Tous les statuts"/>
@@ -38,8 +117,14 @@
                         <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente"/>
                         <f:selectItem itemValue="ANNULEE" itemLabel="Annulée"/>
                     </h:selectOneMenu>
-                    <h:commandButton value="Filtrer" action="#{reservationBean.filtrer}" styleClass="btn btn-secondary"/>
-                    <h:commandButton value="Aujourd'hui" action="#{reservationBean.filtrerAujourdhui}" styleClass="btn btn-secondary"/>
+
+                    <h:commandButton value="Filtrer"
+                                     action="#{reservationBean.filtrer}"
+                                     styleClass="btn btn-secondary"/>
+
+                    <h:commandButton value="Aujourd'hui"
+                                     action="#{reservationBean.filtrerAujourdhui}"
+                                     styleClass="btn btn-secondary"/>
                 </h:form>
             </div>
         </div>
@@ -49,83 +134,146 @@
             <table class="data-table">
                 <thead>
                 <tr>
-                    <th>Client</th><th>Date</th><th>Heure</th><th>Personnes</th><th>Table</th><th>Statut</th><th>Actions</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Personnes</th>
+                    <th>Table</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
+
                 <ui:repeat value="#{reservationBean.reservations}" var="r">
                     <tr>
                         <td>
-                            <div style="font-weight:500;font-size:.88rem;"><h:outputText value="#{r.client.prenom} #{r.client.nom}"/></div>
-                            <div style="font-size:.75rem;color:var(--muted);"><h:outputText value="#{r.client.telephone}"/></div>
+                            <div class="client-name">
+                                <h:outputText value="#{r.client.prenom} #{r.client.nom}"/>
+                            </div>
+                            <div class="client-phone">
+                                <h:outputText value="#{r.client.telephone}"/>
+                            </div>
                         </td>
-                        <td style="font-size:.85rem;"><h:outputText value="#{r.dateReservation}"/></td>
-                        <td style="font-size:.85rem;font-weight:500;"><h:outputText value="#{r.heureReservation}"/></td>
-                        <td style="text-align:center;"><h:outputText value="#{r.nombrePersonnes}"/> pers.</td>
-                        <td style="font-weight:500;">
-                            Table <h:outputText value="#{r.table.numeroTable}"/>
-                            <div style="font-size:.75rem;color:var(--muted);"><h:outputText value="#{r.table.capacite}"/> places</div>
+
+                        <td class="reservation-date">
+                            <h:outputText value="#{r.dateReservation}"/>
                         </td>
+
+                        <td class="reservation-time">
+                            <h:outputText value="#{r.heureReservation}"/>
+                        </td>
+
+                        <td style="text-align:center;font-weight:500;">
+                            <h:outputText value="#{r.nombrePersonnes}"/> pers.
+                        </td>
+
                         <td>
-                            <span class="badge #{r.statut.name() == 'CONFIRMEE' ? 'badge-success' : r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' : 'badge-danger'}">
-                                <h:outputText value="#{r.statut}"/>
+                            <div class="table-chip">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="4" y="7" width="16" height="3" rx="1.5"></rect>
+                                    <path d="M6 10v7"></path>
+                                    <path d="M18 10v7"></path>
+                                    <path d="M9 17h-4"></path>
+                                    <path d="M19 17h-4"></path>
+                                </svg>
+                                Table <h:outputText value="#{r.table.numeroTable}"/>
+                            </div>
+                            <div class="table-meta">
+                                <h:outputText value="#{r.table.capacite}"/> places
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="badge
+                                #{r.statut.name() == 'CONFIRMEE' ? 'badge-success' :
+                                  r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' : 'badge-danger'}">
+                                <h:outputText value="#{r.statut.name() == 'CONFIRMEE' ? 'CONFIRMÉE' :
+                                                       r.statut.name() == 'EN_ATTENTE' ? 'EN_ATTENTE' :
+                                                       'ANNULÉE'}"/>
                             </span>
                         </td>
+
                         <td>
-                            <h:form style="display:flex;gap:6px;">
+                            <h:form styleClass="actions-group">
+
                                 <ui:fragment rendered="#{r.statut.name() == 'EN_ATTENTE'}">
-                                    <h:commandButton value="✓" action="#{reservationBean.confirmer(r)}" styleClass="btn btn-success btn-sm"/>
+                                    <h:commandButton action="#{reservationBean.confirmer(r)}"
+                                                     styleClass="btn btn-success btn-sm"
+                                                     title="Confirmer">
+                                        <f:passThroughAttribute name="value" value="Confirmer"/>
+                                    </h:commandButton>
                                 </ui:fragment>
-                                <h:commandButton value="Modifier" action="#{reservationBean.editer(r)}" styleClass="btn btn-secondary btn-sm"/>
+
+                                <h:commandButton action="#{reservationBean.editer(r)}"
+                                                 styleClass="btn btn-secondary btn-sm"
+                                                 title="Modifier">
+                                    <f:passThroughAttribute name="value" value="Modifier"/>
+                                </h:commandButton>
+
                                 <ui:fragment rendered="#{r.statut.name() != 'ANNULEE'}">
-                                    <h:commandButton value="✕" action="#{reservationBean.annuler(r)}" styleClass="btn btn-danger btn-sm"
-                                                     onclick="return confirm('Annuler cette réservation ?')"/>
+                                    <h:commandButton action="#{reservationBean.annuler(r)}"
+                                                     styleClass="btn btn-danger btn-sm"
+                                                     onclick="return confirm('Annuler cette réservation ?')"
+                                                     title="Annuler">
+                                        <f:passThroughAttribute name="value" value="Annuler"/>
+                                    </h:commandButton>
                                 </ui:fragment>
+
                             </h:form>
                         </td>
                     </tr>
                 </ui:repeat>
+
                 <ui:fragment rendered="#{empty reservationBean.reservations}">
-                    <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">Aucune réservation trouvée</td></tr>
+                    <tr>
+                        <td colspan="7" style="text-align:center;color:var(--muted);padding:32px;">
+                            Aucune réservation trouvée
+                        </td>
+                    </tr>
                 </ui:fragment>
+
                 </tbody>
             </table>
         </div>
 
-        <!-- ══ Modal ══ -->
+        <!-- Modal -->
         <ui:fragment rendered="#{reservationBean.showForm}">
             <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;">
-                <div style="background:white;border-radius:16px;padding:32px;width:min(500px,90vw);box-shadow:0 24px 60px rgba(0,0,0,.2);">
+                <div style="background:white;border-radius:16px;padding:32px;width:min(500px,90vw);box-shadow:0 24px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;">
                     <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--dark);">
                         <h:outputText value="#{reservationBean.modeEdition ? 'Modifier' : 'Nouvelle'} réservation"/>
                     </h3>
+
                     <h:form id="formReservation">
 
                         <!-- Client -->
                         <div style="margin-bottom:14px;">
-                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Client</label>
+                            <label class="modal-field-label">Client</label>
                             <h:selectOneMenu value="#{reservationBean.selectedReservation.client}"
                                              converter="utilisateurConverter"
                                              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"
                                              required="true">
-                                <f:selectItems value="#{reservationBean.clients}" var="cl" itemValue="#{cl}" itemLabel="#{cl.prenom} #{cl.nom}"/>
+                                <f:selectItems value="#{reservationBean.clients}"
+                                               var="cl"
+                                               itemValue="#{cl}"
+                                               itemLabel="#{cl.prenom} #{cl.nom}"/>
                             </h:selectOneMenu>
                         </div>
 
-                        <!-- Date + Heure : input HTML natif + hidden JSF -->
+                        <!-- Date + Heure -->
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
                             <div>
-                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Date</label>
-                                <!-- Input natif HTML pour le calendrier -->
+                                <label class="modal-field-label">Date</label>
                                 <input type="date" id="inputDate"
                                        value="#{reservationBean.selectedDateStr}"
                                        onchange="document.getElementById('formReservation:hiddenDate').value = this.value"
                                        style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;box-sizing:border-box;"/>
-                                <!-- Hidden field JSF qui reçoit la valeur -->
                                 <h:inputHidden id="hiddenDate" value="#{reservationBean.selectedDateStr}"/>
                             </div>
+
                             <div>
-                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Heure</label>
+                                <label class="modal-field-label">Heure</label>
                                 <input type="time" id="inputHeure"
                                        value="#{reservationBean.selectedHeureStr}"
                                        onchange="document.getElementById('formReservation:hiddenHeure').value = this.value"
@@ -137,36 +285,43 @@
                         <!-- Nb personnes + Table -->
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
                             <div>
-                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Nb personnes</label>
+                                <label class="modal-field-label">Nb personnes</label>
                                 <h:inputText value="#{reservationBean.selectedReservation.nombrePersonnes}"
                                              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"
                                              required="true"/>
                             </div>
+
                             <div>
-                                <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Table</label>
+                                <label class="modal-field-label">Table</label>
                                 <h:selectOneMenu value="#{reservationBean.selectedReservation.table}"
                                                  converter="tableConverter"
                                                  style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"
                                                  required="true">
-                                    <f:selectItems value="#{reservationBean.tablesDisponibles}" var="tb"
-                                                   itemValue="#{tb}" itemLabel="Table #{tb.numeroTable} (#{tb.capacite} pers.)"/>
+                                    <f:selectItems value="#{reservationBean.tablesDisponibles}"
+                                                   var="tb"
+                                                   itemValue="#{tb}"
+                                                   itemLabel="Table #{tb.numeroTable} (#{tb.capacite} pers.)"/>
                                 </h:selectOneMenu>
                             </div>
                         </div>
 
                         <!-- Boutons -->
                         <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
-                            <h:commandButton value="Annuler" action="#{reservationBean.fermerForm}" styleClass="btn btn-secondary" immediate="true"/>
+                            <h:commandButton value="Annuler"
+                                             action="#{reservationBean.fermerForm}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"/>
+
                             <h:commandButton value="#{reservationBean.modeEdition ? 'Modifier' : 'Enregistrer'}"
                                              action="#{reservationBean.sauvegarder}"
                                              styleClass="btn btn-primary"
                                              onclick="syncDateHeure()"/>
                         </div>
+
                     </h:form>
                 </div>
             </div>
 
-            <!-- Script pour synchroniser les inputs natifs vers les hidden JSF -->
             <script>
                 function syncDateHeure() {
                     var d = document.getElementById('inputDate');
@@ -176,7 +331,7 @@
                     if (d &amp;&amp; hd) hd.value = d.value;
                     if (h &amp;&amp; hh) hh.value = h.value;
                 }
-                // Initialiser les valeurs au chargement
+
                 window.onload = function() {
                     var hd = document.getElementById('formReservation:hiddenDate');
                     var hh = document.getElementById('formReservation:hiddenHeure');

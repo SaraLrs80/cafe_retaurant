@@ -8,6 +8,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Rimberio — <ui:insert name="pageTitle">Serveur</ui:insert></title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         :root {
@@ -97,32 +98,42 @@
             </div>
             <div>
                 <div class="logo-text">Rimberio</div>
-                <div class="logo-sub">Serveur</div>
+                <div class="logo-sub">ESPACE SERVEUR</div>
             </div>
         </div>
 
         <nav class="sidebar-nav">
-            <div class="nav-section">Mon espace</div>
+
+            <!-- PRINCIPAL -->
+            <div class="nav-section">PRINCIPAL</div>
             <h:link outcome="/pages/serveur/dashboard"
                     styleClass="nav-item #{request.servletPath.contains('dashboard') ? 'active' : ''}">
-                Accueil
+                <i class="fas fa-th-large"></i>
+                Tableau de bord
             </h:link>
 
-            <div class="nav-section">Gestion</div>
+            <!-- GESTION -->
+            <div class="nav-section">GESTION</div>
             <h:link outcome="/pages/serveur/reservations"
                     styleClass="nav-item #{request.servletPath.contains('reservations') ? 'active' : ''}">
+                <i class="far fa-calendar"></i>
                 Réservations
             </h:link>
+
             <h:link outcome="/pages/serveur/commandes"
                     styleClass="nav-item #{request.servletPath.contains('commandes') ? 'active' : ''}">
+                <i class="far fa-clipboard"></i>
                 Commandes
             </h:link>
 
-            <div class="nav-section">Consultation</div>
+            <!-- CONSULTATION -->
+            <div class="nav-section">CONSULTATION</div>
             <h:link outcome="/pages/serveur/menu"
                     styleClass="nav-item #{request.servletPath.contains('menu') ? 'active' : ''}">
-                Menu
+                <i class="fas fa-utensils"></i>
+                Menu du restaurant
             </h:link>
+
         </nav>
 
         <div class="sidebar-footer">
