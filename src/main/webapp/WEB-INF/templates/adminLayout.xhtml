@@ -12,16 +12,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap"
           rel="stylesheet"/>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style type="text/css">
         :root {
-            --orange:        #E8470A;
-            --orange-light:  #F28C28;
+            --orange:        #F28C28;
+            --orange-dark:   #D9711A;
+            --orange-light:  #FFAB76;
             --orange-bg:     #FFF3EC;
             --green:         #2E7D32;
             --green-light:   #4CAF50;
             --green-bg:      #F1F8E9;
+            --red:           #C62828;
+            --red-bg:        #FFEBEE;
             --sidebar-bg:    #1A1208;
-            --sidebar-w:     240px;
+            --sidebar-hover: #2E1A0A;
+            --sidebar-active:#3D2210;
+            --sidebar-w:     250px;
             --topbar-h:      64px;
             --cream:         #FDFAF5;
             --white:         #FFFFFF;
@@ -29,7 +35,7 @@
             --muted:         #7A7060;
             --dark:          #1A1208;
             --text:          #2C2416;
-            --shadow-sm:     0 1px 4px rgba(26,18,8,.08);
+            --shadow-sm:     0 2px 12px rgba(26,18,8,.08);
             --shadow-md:     0 4px 16px rgba(26,18,8,.10);
             --radius:        12px;
         }
@@ -62,26 +68,27 @@
         .sidebar-logo {
             padding: 24px 20px 20px;
             border-bottom: 1px solid rgba(255,255,255,.08);
-            display: flex; align-items: center; gap: 12px;
+            display: flex; align-items: center; gap: 11px;
+            text-decoration: none;
         }
 
-        .logo-circle {
-            width: 38px; height: 38px;
-            background: linear-gradient(135deg, var(--orange), var(--orange-light));
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; flex-shrink: 0;
+        .logo-img {
+            width: 38px; height: 38px; border-radius: 10px;
+            object-fit: cover; box-shadow: 0 4px 12px rgba(242,140,40,0.3);
+            flex-shrink: 0;
         }
 
-        .logo-texts { display: flex; flex-direction: column; }
-        .logo-title {
+        .logo-text-block { display: flex; flex-direction: column; line-height: 1.1; }
+
+        .logo-name {
             font-family: 'Playfair Display', serif;
-            font-size: .95rem; color: #fff;
-            line-height: 1.2;
+            font-size: 1.15rem; font-weight: 900; color: white; letter-spacing: 1px;
         }
+        .logo-name span { color: var(--orange); }
+
         .logo-role {
-            font-size: .65rem; color: var(--orange-light);
-            text-transform: uppercase; letter-spacing: .08em;
+            font-size: 0.62rem; color: var(--orange-light);
+            font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
             margin-top: 2px;
         }
 
@@ -101,38 +108,38 @@
         .nav-label:first-child { margin-top: 0; }
 
         .nav-item {
-            display: flex; align-items: center; gap: 10px;
-            padding: 9px 12px;
-            border-radius: 8px;
-            color: rgba(255,255,255,.6);
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: rgba(255,255,255,.55);
             text-decoration: none;
-            font-size: .85rem; font-weight: 400;
+            font-size: .88rem; font-weight: 500;
             transition: all .18s;
             margin-bottom: 2px;
         }
 
         .nav-item:hover {
-            background: rgba(255,255,255,.07);
+            background: var(--sidebar-hover);
             color: rgba(255,255,255,.9);
         }
 
         .nav-item.active {
-            background: linear-gradient(135deg,
-            rgba(232,71,10,.25) 0%,
-            rgba(242,140,40,.15) 100%);
+            background: var(--sidebar-active);
             color: var(--orange-light);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .nav-item.active .nav-icon { color: var(--orange-light); }
 
         .nav-icon {
-            width: 18px; height: 18px;
+            width: 17px; height: 17px;
             flex-shrink: 0;
-            opacity: .7;
+            opacity: .65;
+            transition: opacity .18s;
+            stroke-width: 2;
         }
         .nav-item.active .nav-icon,
-        .nav-item:hover .nav-icon { opacity: 1; }
+        .nav-item:hover .nav-icon { opacity: 1; stroke: currentColor; }
 
         /* Bas sidebar */
         .sidebar-footer {
@@ -363,29 +370,32 @@
         /* Boutons */
         .btn {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px; border-radius: 8px;
+            padding: 9px 18px; border-radius: 10px;
             font-family: 'Inter', sans-serif;
-            font-size: .82rem; font-weight: 500;
+            font-size: .85rem; font-weight: 600;
             cursor: pointer; border: none;
             transition: all .2s; text-decoration: none;
+            justify-content: center;
         }
         .btn-primary {
-            background: var(--orange); color: white;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark)); color: white;
+            box-shadow: 0 4px 14px rgba(242,140,40,.28);
         }
         .btn-primary:hover {
-            background: #C83D08;
-            box-shadow: 0 4px 12px rgba(232,71,10,.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(242,140,40,.38);
+            color: white;
         }
         .btn-secondary {
-            background: var(--white); color: var(--dark);
+            background: var(--cream); color: var(--dark);
             border: 1.5px solid var(--border);
         }
-        .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
-        .btn-danger { background: #FFEBEE; color: #C62828; }
+        .btn-secondary:hover { background: #f0ebe0; border-color: #c8bfa8; color: var(--dark); }
+        .btn-danger { background: var(--red-bg); color: var(--red); border: 1.5px solid #FFCDD2; }
         .btn-danger:hover { background: #FFCDD2; }
         .btn-success { background: var(--green-bg); color: var(--green); }
         .btn-success:hover { background: #C8E6C9; }
-        .btn-sm { padding: 5px 10px; font-size: .75rem; }
+        .btn-sm { padding: 6px 12px; font-size: .78rem; border-radius: 8px; }
 
         /* Grid 2 cols */
         .grid-2 {
@@ -407,16 +417,13 @@
 
     <div class="sidebar">
         <!-- Logo -->
-        <div class="sidebar-logo">
-            <div class="logo-circle" style="overflow:hidden; background:none; padding:0;">
-                <h:graphicImage library="images" name="Logo.jpeg" alt="Rimberio"
-                                style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;"/>
+        <h:link outcome="/pages/admin/dashboard" styleClass="sidebar-logo">
+            <h:graphicImage library="images" name="Logo.jpeg" styleClass="logo-img" alt="RIMBERIO" />
+            <div class="logo-text-block">
+                <span class="logo-name">RIM<span>BERIO</span></span>
+                <span class="logo-role">Espace Administrateur</span>
             </div>
-            <div class="logo-texts">
-                <span class="logo-title">Rimberio</span>
-                <span class="logo-role">ESPACE ADMINISTRATEUR</span>
-            </div>
-        </div>
+        </h:link>
 
         <!-- Navigation -->
         <nav class="nav-section">
@@ -424,68 +431,36 @@
 
             <h:link outcome="/pages/admin/dashboard"
                     styleClass="nav-item #{request.servletPath.contains('dashboard') ? 'active' : ''}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                </svg>
-                Tableau de bord
+                <i data-lucide="layout-dashboard" class="nav-icon"></i> Tableau de bord
             </h:link>
 
             <div class="nav-label">Gestion</div>
 
             <h:link outcome="/pages/admin/reservations"
                     styleClass="nav-item #{request.servletPath.contains('reservations') ? 'active' : ''}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                Réservations
+                <i data-lucide="calendar-check" class="nav-icon"></i> Réservations
             </h:link>
 
             <h:link outcome="/pages/admin/tables"
                     styleClass="nav-item #{request.servletPath.contains('tables') ? 'active' : ''}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9h18M3 15h18M12 3v18"/>
-                </svg>
-                Tables
+                <i data-lucide="armchair" class="nav-icon"></i> Tables
             </h:link>
 
             <h:link outcome="/pages/admin/commandes"
                     styleClass="nav-item #{request.servletPath.contains('commandes') ? 'active' : ''}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                    <rect x="9" y="3" width="6" height="4" rx="2"/>
-                    <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
-                </svg>
-                Commandes
+                <i data-lucide="shopping-bag" class="nav-icon"></i> Commandes
             </h:link>
 
             <h:link outcome="/pages/admin/menu"
                     styleClass="nav-item #{request.servletPath.contains('menu') ? 'active' : ''}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-                    <path d="M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
-                </svg>
-                Menu
+                <i data-lucide="book-open" class="nav-icon"></i> Menu
             </h:link>
 
             <div class="nav-label">Système</div>
 
             <h:link outcome="/pages/admin/utilisateurs"
                     styleClass="nav-item #{request.servletPath.contains('utilisateurs') ? 'active' : ''}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                Utilisateurs
+                <i data-lucide="users" class="nav-icon"></i> Utilisateurs
             </h:link>
 
         </nav>
@@ -507,13 +482,7 @@
             </div>
             <h:form>
                 <h:commandLink action="#{authBean.logout}" styleClass="btn-logout">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                         stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        <polyline points="16 17 21 12 16 7"/>
-                        <line x1="21" y1="12" x2="9" y2="12"/>
-                    </svg>
+                    <i data-lucide="log-out" style="width:16px;height:16px;"></i>
                     Se déconnecter
                 </h:commandLink>
             </h:form>
@@ -542,6 +511,14 @@
     </div>
 
     <ui:insert name="scripts"/>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if(typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
 
 </h:body>
 </html>

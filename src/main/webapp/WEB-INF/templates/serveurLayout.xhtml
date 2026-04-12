@@ -8,43 +8,73 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Rimberio — <ui:insert name="pageTitle">Serveur</ui:insert></title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         :root {
-            --orange:      #E8510A;
-            --orange-bg:   #FFF3EE;
-            --orange-dark: #C4420A;
-            --dark:        #1A1208;
-            --sidebar-bg:  #1C1407;
-            --muted:       #7A7060;
-            --border:      #E8E0D5;
-            --green:       #2D7D46;
-            --green-bg:    #EAF7EE;
-            --blue:        #1A6B9A;
-            --blue-bg:     #E8F4FB;
-            --red:         #C0392B;
-            --red-bg:      #FDEDEC;
-            --bg:          #F8F5F0;
+            --orange:        #F28C28;
+            --orange-dark:   #D9711A;
+            --orange-light:  #FFAB76;
+            --orange-bg:     #FFF3EC;
+            --dark:          #1A1208;
+            --cream:         #FDFAF5;
+            --sidebar-bg:    #1A1208;
+            --sidebar-hover: #2E1A0A;
+            --sidebar-active:#3D2210;
+            --border:        #E8E0D0;
+            --muted:         #7A7060;
+            --white:         #FFFFFF;
+            --red:           #C62828;
+            --red-bg:        #FFEBEE;
+            --green:         #2E7D32;
+            --green-bg:      #F1F8E9;
+            --green-light:   #4CAF50;
+            --blue:          #1A6B9A;
+            --blue-bg:       #E8F4FB;
         }
-        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--dark); display:flex; min-height:100vh; }
+        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--cream); color:var(--dark); display:flex; min-height:100vh; }
         .sidebar { width:240px; background:var(--sidebar-bg); color:white; display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
-        .sidebar-logo { padding:20px 16px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:center; gap:10px; }
-        .sidebar-logo .logo-icon { width:38px; height:38px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
-        .sidebar-logo .logo-text { font-size:.95rem; font-weight:700; }
-        .sidebar-logo .logo-sub  { font-size:.65rem; color:var(--orange); text-transform:uppercase; letter-spacing:1px; }
-        .sidebar-nav { flex:1; padding:16px 10px; overflow-y:auto; }
-        .nav-section { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,.35); padding:12px 8px 6px; }
-        .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; font-size:.82rem; color:rgba(255,255,255,.65); text-decoration:none; margin-bottom:2px; cursor:pointer; transition:all .15s; }
-        .nav-item:hover { background:rgba(255,255,255,.08); color:white; }
-        .nav-item.active { background:var(--orange); color:white; }
-        .sidebar-footer { padding:14px 16px; border-top:1px solid rgba(255,255,255,.08); }
-        .user-info { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-        .user-avatar { width:34px; height:34px; background:var(--orange); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; color:white; flex-shrink:0; }
-        .user-name  { font-size:.82rem; font-weight:600; }
-        .user-email { font-size:.68rem; color:rgba(255,255,255,.45); }
-        .logout-btn { display:flex; align-items:center; gap:8px; font-size:.8rem; color:rgba(255,255,255,.5); background:none; border:none; cursor:pointer; padding:4px 0; width:100%; }
-        .logout-btn:hover { color:white; }
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; gap: 11px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 38px; height: 38px; border-radius: 10px;
+            object-fit: cover; box-shadow: 0 4px 12px rgba(242,140,40,0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-text-block { display: flex; flex-direction: column; line-height: 1.1; }
+
+        .logo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem; font-weight: 900; color: white; letter-spacing: 1px;
+        }
+        .logo-name span { color: var(--orange); }
+
+        .logo-role {
+            font-size: 0.62rem; color: var(--orange-light);
+            font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .sidebar-nav { flex:1; padding:16px 12px; overflow-y:auto; }
+        .nav-section { font-size:.62rem; font-weight:600; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.3); padding:0 8px; margin-bottom:6px; margin-top:16px; }
+        .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; font-size:.85rem; color:rgba(255,255,255,.6); text-decoration:none; margin-bottom:2px; cursor:pointer; transition:all .18s; font-weight:400; }
+        .nav-item i { width: 17px; height: 17px; stroke-width: 2; opacity: .7; transition: opacity .18s; }
+        .nav-item:hover { background:var(--sidebar-hover); color:rgba(255,255,255,.9); }
+        .nav-item:hover i { opacity: 1; stroke: currentColor; }
+        .nav-item.active { background:var(--sidebar-active); color:var(--orange-light); font-weight:500; }
+        .nav-item.active i { color:var(--orange-light); opacity: 1; }
+        .sidebar-footer { padding:16px 12px; border-top:1px solid rgba(255,255,255,.08); }
+        .user-info { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.05); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+        .user-avatar { width:34px; height:34px; background:linear-gradient(135deg, var(--orange), var(--orange-dark)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; color:white; flex-shrink:0; }
+        .user-name  { font-size:.82rem; font-weight:500; color:rgba(255,255,255,.9); }
+        .user-email { font-size:.68rem; color:rgba(255,255,255,.4); margin-top:1px; }
+        .logout-btn { display:flex; align-items:center; gap:8px; width:100%; padding:9px 12px; background:transparent; border:1px solid rgba(255,255,255,.1); border-radius:8px; font-size:.82rem; color:rgba(255,255,255,.5); cursor:pointer; transition:all .2s; text-decoration:none; }
+        .logout-btn:hover { background:rgba(192,57,43,.15); border-color:rgba(192,57,43,.3); color:#E57373; text-decoration:none; }
         .main { margin-left:240px; flex:1; min-height:100vh; }
         .topbar { background:white; border-bottom:1px solid var(--border); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; }
         .topbar-title { font-size:1rem; font-weight:600; color:var(--dark); }
@@ -55,15 +85,15 @@
         .card { background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden; }
         .card-head { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
         .card-head-title { font-size:.9rem; font-weight:600; }
-        .btn { padding:8px 16px; border-radius:8px; font-size:.82rem; font-weight:500; border:none; cursor:pointer; transition:all .15s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
-        .btn-primary   { background:var(--orange); color:white; }
-        .btn-primary:hover { background:var(--orange-dark); }
-        .btn-secondary { background:#F0EBE3; color:var(--dark); }
-        .btn-secondary:hover { background:#E5DDD4; }
-        .btn-success   { background:var(--green); color:white; }
-        .btn-success:hover { background:#236338; }
-        .btn-danger    { background:var(--red); color:white; }
-        .btn-danger:hover { background:#a93226; }
+        .btn { padding:9px 18px; border-radius:10px; font-size:.85rem; font-weight:600; border:none; cursor:pointer; transition:all .2s; text-decoration:none; display:inline-flex; align-items:center; gap:6px; justify-content:center; }
+        .btn-primary   { background:linear-gradient(135deg, var(--orange), var(--orange-dark)); color:white; box-shadow:0 4px 14px rgba(242,140,40,.28); }
+        .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(242,140,40,.38); }
+        .btn-secondary { background:var(--cream); color:var(--dark); border:1.5px solid var(--border); }
+        .btn-secondary:hover { background:#f0ebe0; border-color:#c8bfa8; color:var(--dark); }
+        .btn-success   { background:var(--green-bg); color:var(--green); }
+        .btn-success:hover { background:#C8E6C9; }
+        .btn-danger    { background:var(--red-bg); color:var(--red); border:1.5px solid #FFCDD2; }
+        .btn-danger:hover { background:#FFCDD2; }
         .btn-info      { background:var(--blue); color:white; }
         .btn-sm { padding:5px 10px; font-size:.76rem; }
         .data-table { width:100%; border-collapse:collapse; }
@@ -91,16 +121,13 @@
 
 <h:body>
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <div class="logo-icon" style="overflow:hidden; padding:0;">
-                <h:graphicImage library="images" name="Logo.jpeg" alt="Rimberio"
-                                style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;"/>
+        <h:link outcome="/pages/serveur/dashboard" styleClass="sidebar-logo">
+            <h:graphicImage library="images" name="Logo.jpeg" styleClass="logo-img" alt="RIMBERIO" />
+            <div class="logo-text-block">
+                <span class="logo-name">RIM<span>BERIO</span></span>
+                <span class="logo-role">Espace Serveur</span>
             </div>
-            <div>
-                <div class="logo-text">Rimberio</div>
-                <div class="logo-sub">ESPACE SERVEUR</div>
-            </div>
-        </div>
+        </h:link>
 
         <nav class="sidebar-nav">
 
@@ -108,7 +135,7 @@
             <div class="nav-section">PRINCIPAL</div>
             <h:link outcome="/pages/serveur/dashboard"
                     styleClass="nav-item #{request.servletPath.contains('dashboard') ? 'active' : ''}">
-                <i class="fas fa-th-large"></i>
+                <i data-lucide="layout-dashboard"></i>
                 Tableau de bord
             </h:link>
 
@@ -116,13 +143,13 @@
             <div class="nav-section">GESTION</div>
             <h:link outcome="/pages/serveur/reservations"
                     styleClass="nav-item #{request.servletPath.contains('reservations') ? 'active' : ''}">
-                <i class="far fa-calendar"></i>
+                <i data-lucide="calendar-check"></i>
                 Réservations
             </h:link>
 
             <h:link outcome="/pages/serveur/commandes"
                     styleClass="nav-item #{request.servletPath.contains('commandes') ? 'active' : ''}">
-                <i class="far fa-clipboard"></i>
+                <i data-lucide="shopping-bag"></i>
                 Commandes
             </h:link>
 
@@ -130,7 +157,7 @@
             <div class="nav-section">CONSULTATION</div>
             <h:link outcome="/pages/serveur/menu"
                     styleClass="nav-item #{request.servletPath.contains('menu') ? 'active' : ''}">
-                <i class="fas fa-utensils"></i>
+                <i data-lucide="book-open"></i>
                 Menu du restaurant
             </h:link>
 
@@ -151,7 +178,10 @@
                 </div>
             </div>
             <h:form>
-                <h:commandButton value="Se déconnecter" action="#{authBean.logout}" styleClass="logout-btn"/>
+                <h:commandLink action="#{authBean.logout}" styleClass="logout-btn">
+                    <i data-lucide="log-out" style="width:16px;height:16px;"></i>
+                    Se déconnecter
+                </h:commandLink>
             </h:form>
         </div>
     </div>
@@ -165,5 +195,12 @@
             <ui:insert name="content"/>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if(typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
 </h:body>
 </html>

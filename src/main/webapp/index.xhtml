@@ -932,9 +932,9 @@
             const sections = [
                 { id: 'hero',      link: document.querySelector('[data-section="hero"]') },
                 { id: 'features',  link: document.querySelector('[data-section="features"]') },
+                { id: 'roles',     link: document.querySelector('[data-section="roles"]') },
                 { id: 'resa',      link: document.querySelector('[data-section="resa"]') },
-                { id: 'commandes', link: document.querySelector('[data-section="commandes"]') },
-                { id: 'roles',     link: document.querySelector('[data-section="roles"]') }
+                { id: 'commandes', link: document.querySelector('[data-section="commandes"]') }
             ];
 
             function setActive(sectionId) {
@@ -943,16 +943,32 @@
                 if (current &amp;&amp; current.link) current.link.classList.add('active');
             }
 
+            let isClickScrolling = false;
+            let scrollTimeout = null;
+
             sections.forEach(function (s) {
-                if (s.link) { s.link.addEventListener('click', function () { setActive(s.id); }); }
+                if (s.link) { 
+                    s.link.addEventListener('click', function () { 
+                        isClickScrolling = true;
+                        setActive(s.id); 
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(function() { isClickScrolling = false; }, 800);
+                    }); 
+                }
             });
 
             window.addEventListener('scroll', function () {
-                var scrollY = window.scrollY + 100;
+                if (isClickScrolling) return;
+                
                 var current = 'hero';
                 sections.forEach(function (s) {
                     var el = document.getElementById(s.id);
-                    if (el &amp;&amp; el.offsetTop &lt;= scrollY) current = s.id;
+                    if (el) {
+                        var rect = el.getBoundingClientRect();
+                        if (rect.top &lt;= window.innerHeight / 3) {
+                            current = s.id;
+                        }
+                    }
                 });
                 setActive(current);
             });

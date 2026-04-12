@@ -6,21 +6,90 @@
 
 <ui:composition template="/WEB-INF/templates/serveurLayout.xhtml">
 
-    <ui:define name="pageTitle">Accueil</ui:define>
+    <ui:define name="pageTitle">Accueil Serveur</ui:define>
 
     <ui:define name="content">
-        <div style="text-align:center;padding:60px;color:var(--muted);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2"
-                 style="margin-bottom:16px;color:var(--border);">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 7h13M7 13l-1-4m6 4v4m0 0h2m-2 0H9"/>
-            </svg>
-            <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:8px;color:var(--dark);">
-                Bienvenue, <h:outputText value="#{authBean.currentUser.prenom}"/> !
+        
+        <!-- Bienvenue -->
+        <div style="margin-bottom:24px;">
+            <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--dark);margin-bottom:4px;">
+                Bienvenue,
+                <h:outputText value="#{authBean.currentUser.prenom}"/> !
             </h2>
-            <p style="font-size:.85rem;">Utilisez le menu de gauche pour gérer les commandes et réservations.</p>
+
+            <p style="font-size:.85rem;color:var(--muted);">
+                Voici un aperçu de vos tâches et opérations en cours.
+            </p>
         </div>
+
+        <!-- STATISTIQUES -->
+        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i data-lucide="bell-electric" style="width:24px;height:24px;color:var(--orange);"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" style="font-size:1.2rem;">En service</div>
+                    <div class="stat-label">Statut actuel</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i data-lucide="clipboard-list" style="width:24px;height:24px;color:#1A6B9A;"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" style="font-size:1.2rem;">Actif</div>
+                    <div class="stat-label">Gestion des commandes</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i data-lucide="check-circle" style="width:24px;height:24px;color:var(--green);"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" style="font-size:1.2rem;">Disponible</div>
+                    <div class="stat-label">Attribution de tables</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <div class="card" style="background:white; border-radius:12px; border:1px solid var(--border); padding:24px;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+                    <div style="width:48px;height:48px;border-radius:12px;background:var(--orange-bg);display:flex;align-items:center;justify-content:center;">
+                        <i data-lucide="utensils-crossed" style="color:var(--orange);width:24px;height:24px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size:1rem;font-weight:600;margin-bottom:4px;">Commandes Rapides</h3>
+                        <p style="font-size:0.8rem;color:var(--muted);">Passez une commande pour une table occupée.</p>
+                    </div>
+                </div>
+                <h:link outcome="/pages/serveur/commandes" styleClass="btn btn-secondary" style="width:100%;justify-content:center;">
+                    Accéder aux commandes
+                </h:link>
+            </div>
+
+            <div class="card" style="background:white; border-radius:12px; border:1px solid var(--border); padding:24px;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+                    <div style="width:48px;height:48px;border-radius:12px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;">
+                        <i data-lucide="book-open" style="color:var(--green);width:24px;height:24px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size:1rem;font-weight:600;margin-bottom:4px;">Menu du restaurant</h3>
+                        <p style="font-size:0.8rem;color:var(--muted);">Consultez la disponibilité des plats.</p>
+                    </div>
+                </div>
+                <h:link outcome="/pages/serveur/menu" styleClass="btn btn-secondary" style="width:100%;justify-content:center;">
+                    Voir le menu complet
+                </h:link>
+            </div>
+
+        </div>
+
     </ui:define>
 
 </ui:composition>
