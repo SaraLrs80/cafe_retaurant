@@ -54,7 +54,9 @@
                 <ui:repeat value="#{serveurCommandeBean.commandes}" var="c">
                     <tr>
                         <td style="font-weight:600;">#<h:outputText value="#{c.idCommande}"/></td>
-                        <td style="font-size:.82rem;color:var(--muted);"><h:outputText value="#{c.dateCommande}"/></td>
+                        <td style="font-size:.82rem;color:var(--muted);"><h:outputText value="#{c.dateCommande}">
+                            <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm"/>
+                        </h:outputText></td>
                         <td>
                             <span class="badge #{c.typeCommande.name() == 'SUR_PLACE' ? 'badge-info' : 'badge-muted'}">
                                 <h:outputText value="#{c.typeCommande.name() == 'SUR_PLACE' ? 'Sur place' : 'En ligne'}"/>

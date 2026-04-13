@@ -2,7 +2,9 @@ package com.cafe.caferestaurant.dao;
 
 import com.cafe.caferestaurant.entities.Commande;
 import com.cafe.caferestaurant.entities.LigneCommande;
+import com.cafe.caferestaurant.entities.TableRestaurant;
 import com.cafe.caferestaurant.enums.StatutCommande;
+import com.cafe.caferestaurant.enums.StatutTable;
 import com.cafe.caferestaurant.utils.HibernateUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -111,9 +113,24 @@ public class CommandeDAO {
         try {
             em.getTransaction().begin();
             em.merge(c);
+
+            // Si commande SUR_PLACE terminée → libérer la table
+            boolean estTerminee = c.getStatut() == StatutCommande.SERVIE
+                    || c.getStatut() == StatutCommande.PAYEE
+                    || c.getStatut() == StatutCommande.ANNULEE;
+
+            if (c.getTable() != null && estTerminee) {
+                TableRestaurant table = em.find(TableRestaurant.class,
+                        c.getTable().getIdTable());
+                if (table != null) {
+                    table.setStatut(StatutTable.DISPONIBLE);
+                    em.merge(table);
+                }
+            }
+
             em.getTransaction().commit();
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw new RuntimeException("Erreur update Commande", e);
         } finally { em.close(); }
     }

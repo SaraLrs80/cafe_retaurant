@@ -70,6 +70,7 @@ public class ServeurCommandeBean implements Serializable {
         return null;
     }
 
+
     // ── Nouvelle commande ────────────────────────────────────────────────────
 
     public String ouvrirFormCommande() {

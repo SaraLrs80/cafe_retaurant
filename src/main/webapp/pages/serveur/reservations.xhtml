@@ -42,7 +42,7 @@
                     </h:selectOneMenu>
                     <h:commandButton value="Filtrer"       action="#{reservationBean.filtrer}"          styleClass="btn btn-secondary"/>
                     <h:commandButton value="Aujourd'hui"   action="#{reservationBean.filtrerAujourdhui}" styleClass="btn btn-primary"/>
-                    <h:commandButton value="Tout afficher" action="#{reservationBean.filtrer}"           styleClass="btn btn-secondary" immediate="true"/>
+                    <h:commandButton value="Tout afficher" action="#{reservationBean.reinitialiserFiltres}"           styleClass="btn btn-secondary" immediate="true"/>
                 </h:form>
             </div>
         </div>
@@ -72,9 +72,13 @@
                                 <h:outputText value="#{r.client.telephone}"/>
                             </div>
                         </td>
-                        <td style="font-size:.85rem;"><h:outputText value="#{r.dateReservation}"/></td>
+                        <td style="font-size:.85rem;"><h:outputText value="#{r.dateReservation}">
+                            <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                        </h:outputText></td>
                         <td style="font-size:.85rem;font-weight:500;color:var(--orange);">
-                            <h:outputText value="#{r.heureReservation}"/>
+                            <h:outputText value="#{r.heureReservation}">
+                                <f:convertDateTime type="localTime" pattern="HH:mm"/>
+                            </h:outputText>
                         </td>
                         <td style="text-align:center;font-weight:600;">
                             <h:outputText value="#{r.nombrePersonnes}"/>

@@ -12,7 +12,7 @@ public class TableDAO {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {
             return em.createQuery(
-                    "SELECT COUNT(t) FROM TableRestaurant t WHERE t.statut = 'DISPONIBLE'",
+                    "SELECT COUNT(t) FROM TableRestaurant t WHERE t.statut = 'DISPONIBLE' AND t.active = true",
                     Long.class
             ).getSingleResult();
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class TableDAO {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {
             return em.createQuery(
-                    "SELECT t FROM TableRestaurant t ORDER BY t.numeroTable ASC",
+                    "SELECT t FROM TableRestaurant t WHERE t.active = true ORDER BY t.numeroTable ASC",
                     TableRestaurant.class
             ).getResultList();
         } finally {
@@ -38,7 +38,7 @@ public class TableDAO {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {
             return em.createQuery(
-                    "SELECT t FROM TableRestaurant t WHERE t.statut = 'DISPONIBLE' ORDER BY t.numeroTable ASC",
+                    "SELECT t FROM TableRestaurant t WHERE t.statut = 'DISPONIBLE' AND t.active = true ORDER BY t.numeroTable ASC",
                     TableRestaurant.class
             ).getResultList();
         } finally {
@@ -91,16 +91,42 @@ public class TableDAO {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {
             em.getTransaction().begin();
+
             TableRestaurant table = em.find(TableRestaurant.class, id);
-            if (table != null) {
-                em.remove(table);
+
+            if (table == null) return;
+
+            // On refuse si la table n'est pas disponible
+            if (!table.getStatut().name().equals("DISPONIBLE")) {
+                throw new IllegalStateException("TABLE_NOT_AVAILABLE");
             }
+
+            // Désactivation logique au lieu de suppression physique
+            table.setActive(false);
+            em.merge(table);
+
             em.getTransaction().commit();
+
+        } catch (IllegalStateException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw new RuntimeException("Erreur delete Table", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public Integer getNextNumeroTable() {
+        EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            Integer maxNumero = em.createQuery(
+                    "SELECT MAX(t.numeroTable) FROM TableRestaurant t",
+                    Integer.class
+            ).getSingleResult();
+
+            return (maxNumero == null) ? 1 : maxNumero + 1;
         } finally {
             em.close();
         }

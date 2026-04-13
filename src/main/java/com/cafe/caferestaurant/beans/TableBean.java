@@ -5,14 +5,16 @@ import com.cafe.caferestaurant.enums.StatutTable;
 import com.cafe.caferestaurant.entities.TableRestaurant;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.view.ViewScoped;   // ← CHANGEMENT CLÉ : était SessionScoped
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Named("tableBean")
-@SessionScoped
+@ViewScoped  // ← Relit la base à chaque requête → statuts toujours à jour  (j'ai changer de request)
 public class TableBean implements Serializable {
 
     private final TableDAO dao = new TableDAO();
@@ -33,7 +35,9 @@ public class TableBean implements Serializable {
 
     public String nouvelleTable() {
         selectedTable = new TableRestaurant();
+        selectedTable.setNumeroTable(dao.getNextNumeroTable());
         selectedTable.setStatut(StatutTable.DISPONIBLE);
+        selectedTable.setActive(true);
         modeEdition = false;
         showForm    = true;
         return null;
@@ -61,10 +65,23 @@ public class TableBean implements Serializable {
         return null;
     }
 
-    public String supprimer(Long id) {
-        dao.delete(id);
-        charger();
-        return null;
+    public void supprimer(Long idTable) {
+        try {
+            dao.delete(idTable);
+            charger();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Succès", "Table désactivée avec succès"));
+        } catch (IllegalStateException e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Suppression impossible",
+                            "Cette table a des réservations actives. Annulez-les d'abord."));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Erreur", "Une erreur inattendue s'est produite."));
+        }
     }
 
     public String annuler() {
@@ -72,30 +89,27 @@ public class TableBean implements Serializable {
         return null;
     }
 
-    // ── Compteurs pour les stats ──────────────────────────────────────────────
+    // ── Compteurs calculés depuis la liste fraîche ───────────────────────────
     public long getNbDisponibles() {
-        return tables.stream()
-            .filter(t -> t.getStatut() == StatutTable.DISPONIBLE).count();
+        return tables.stream().filter(t -> t.getStatut() == StatutTable.DISPONIBLE).count();
     }
 
     public long getNbOccupees() {
-        return tables.stream()
-            .filter(t -> t.getStatut() == StatutTable.OCCUPEE).count();
+        return tables.stream().filter(t -> t.getStatut() == StatutTable.OCCUPEE).count();
     }
 
     public long getNbReservees() {
-        return tables.stream()
-            .filter(t -> t.getStatut() == StatutTable.RESERVEE).count();
+        return tables.stream().filter(t -> t.getStatut() == StatutTable.RESERVEE).count();
     }
 
     public int getTotalTables() {
         return tables.size();
     }
 
-    // ── Getters / Setters ─────────────────────────────────────────────────────
-    public List<TableRestaurant> getTables()                   { return tables; }
-    public TableRestaurant       getSelectedTable()            { return selectedTable; }
-    public void                  setSelectedTable(TableRestaurant t) { this.selectedTable = t; }
-    public boolean               isShowForm()                  { return showForm; }
-    public boolean               isModeEdition()               { return modeEdition; }
+    // ── Getters / Setters ────────────────────────────────────────────────────
+    public List<TableRestaurant> getTables()                        { return tables; }
+    public TableRestaurant       getSelectedTable()                 { return selectedTable; }
+    public void                  setSelectedTable(TableRestaurant t){ this.selectedTable = t; }
+    public boolean               isShowForm()                       { return showForm; }
+    public boolean               isModeEdition()                    { return modeEdition; }
 }

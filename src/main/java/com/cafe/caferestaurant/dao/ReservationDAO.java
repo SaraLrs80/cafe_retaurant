@@ -1,7 +1,9 @@
 package com.cafe.caferestaurant.dao;
 
 import com.cafe.caferestaurant.entities.Reservation;
+import com.cafe.caferestaurant.entities.TableRestaurant;
 import com.cafe.caferestaurant.enums.StatutReservation;
+import com.cafe.caferestaurant.enums.StatutTable;
 import com.cafe.caferestaurant.utils.HibernateUtil;
 import jakarta.persistence.EntityManager;
 
@@ -67,26 +69,93 @@ public class ReservationDAO {
         } finally { em.close(); }
     }
 
+
+    /**
+     * CORRIGÉ : save() met maintenant à jour le statut de la table
+     * EN_ATTENTE  → table reste DISPONIBLE (réservation pas encore confirmée)
+     * CONFIRMEE   → table passe en RESERVEE
+     */
     public void save(Reservation r) {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(r);
+
+            // Mettre à jour le statut de la table selon le statut de la réservation
+            if (r.getTable() != null) {
+                TableRestaurant table = em.find(TableRestaurant.class, r.getTable().getIdTable());
+                if (table != null) {
+                    if (r.getStatut() == StatutReservation.CONFIRMEE) {
+                        table.setStatut(StatutTable.RESERVEE);
+                        em.merge(table);
+                    }
+                    // EN_ATTENTE : on ne change pas le statut de la table
+                    // (la table reste DISPONIBLE jusqu'à confirmation)
+                }
+            }
+
             em.getTransaction().commit();
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw new RuntimeException("Erreur save Reservation", e);
         } finally { em.close(); }
     }
 
+    /**
+     * CORRIGÉ : utilise les enum Java au lieu de String literals dans la requête JPQL
+     * pour éviter tout problème de comparaison avec varchar en base.
+     */
     public void update(Reservation r) {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(r);
+
+            if (r.getTable() != null) {
+                TableRestaurant table = em.find(TableRestaurant.class, r.getTable().getIdTable());
+                if (table != null) {
+                    switch (r.getStatut()) {
+
+                        case CONFIRMEE:
+                            table.setStatut(StatutTable.RESERVEE);
+                            em.merge(table);
+                            break;
+
+                        case HONOREE:
+                            table.setStatut(StatutTable.OCCUPEE);
+                            em.merge(table);
+                            break;
+
+                        case ANNULEE:
+                        case EN_ATTENTE:
+                            // CORRIGÉ : utilise les enum Java, pas des String literals
+                            Long autresActives = em.createQuery(
+                                            "SELECT COUNT(r2) FROM Reservation r2 " +
+                                                    "WHERE r2.table.idTable = :idTable " +
+                                                    "AND r2.statut IN :statuts " +          // ← enum, pas String
+                                                    "AND r2.idReservation != :idRes", Long.class)
+                                    .setParameter("idTable", r.getTable().getIdTable())
+                                    .setParameter("statuts", List.of(
+                                            StatutReservation.EN_ATTENTE,
+                                            StatutReservation.CONFIRMEE))   // ← enum Java
+                                    .setParameter("idRes", r.getIdReservation())
+                                    .getSingleResult();
+
+                            if (autresActives == 0) {
+                                table.setStatut(StatutTable.DISPONIBLE);
+                                em.merge(table);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
             em.getTransaction().commit();
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw new RuntimeException("Erreur update Reservation", e);
         } finally { em.close(); }
     }
@@ -96,14 +165,34 @@ public class ReservationDAO {
         try {
             em.getTransaction().begin();
             Reservation r = em.find(Reservation.class, id);
-            if (r != null) em.remove(r);
+            if (r != null) {
+                Long autresActives = em.createQuery(
+                                "SELECT COUNT(r2) FROM Reservation r2 " +
+                                        "WHERE r2.table.idTable = :idTable " +
+                                        "AND r2.statut IN :statuts " +
+                                        "AND r2.idReservation != :idRes", Long.class)
+                        .setParameter("idTable", r.getTable().getIdTable())
+                        .setParameter("statuts", List.of(
+                                StatutReservation.EN_ATTENTE,
+                                StatutReservation.CONFIRMEE))
+                        .setParameter("idRes", r.getIdReservation())
+                        .getSingleResult();
+
+                if (autresActives == 0) {
+                    TableRestaurant table = em.find(TableRestaurant.class, r.getTable().getIdTable());
+                    if (table != null) {
+                        table.setStatut(StatutTable.DISPONIBLE);
+                        em.merge(table);
+                    }
+                }
+                em.remove(r);
+            }
             em.getTransaction().commit();
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw new RuntimeException("Erreur delete Reservation", e);
         } finally { em.close(); }
     }
-
     // ══════════════════════════════════════════════════════════════════════
     // MÉTHODES CLIENT
     // ══════════════════════════════════════════════════════════════════════

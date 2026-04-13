@@ -90,7 +90,7 @@ public class AuthFilter implements Filter {
                 || uri.contains("/pages/public/")
                 || uri.contains("/pages/auth/")
                 || uri.contains("/auth/google")
-                // ✅ JSF resources (images, CSS, JS via h:graphicImage, h:outputStylesheet...)
+                // JSF resources (images, CSS, JS via h:graphicImage, h:outputStylesheet...)
                 || uri.contains("javax.faces.resource")   // couvre /javax.faces.resource/...
                 || uri.contains("jakarta.faces.resource")  // ← AJOUTE ÇA pour Jakarta EE
                 || uri.contains("/resources/css/")

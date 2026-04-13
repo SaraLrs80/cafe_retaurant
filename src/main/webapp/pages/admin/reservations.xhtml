@@ -115,6 +115,7 @@
                         <f:selectItem itemValue="" itemLabel="Tous les statuts"/>
                         <f:selectItem itemValue="CONFIRMEE" itemLabel="Confirmée"/>
                         <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente"/>
+                        <f:selectItem itemValue="HONOREE" itemLabel="Honorée"/>
                         <f:selectItem itemValue="ANNULEE" itemLabel="Annulée"/>
                     </h:selectOneMenu>
 
@@ -124,6 +125,9 @@
 
                     <h:commandButton value="Aujourd'hui"
                                      action="#{reservationBean.filtrerAujourdhui}"
+                                     styleClass="btn btn-secondary"/>
+                    <h:commandButton value="Réinitialiser"
+                                     action="#{reservationBean.reinitialiserFiltres}"
                                      styleClass="btn btn-secondary"/>
                 </h:form>
             </div>
@@ -185,13 +189,16 @@
                         </td>
 
                         <td>
-                            <span class="badge
-                                #{r.statut.name() == 'CONFIRMEE' ? 'badge-success' :
-                                  r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' : 'badge-danger'}">
-                                <h:outputText value="#{r.statut.name() == 'CONFIRMEE' ? 'CONFIRMÉE' :
-                                                       r.statut.name() == 'EN_ATTENTE' ? 'EN_ATTENTE' :
-                                                       'ANNULÉE'}"/>
-                            </span>
+    <span class="badge
+        #{r.statut.name() == 'CONFIRMEE' ? 'badge-success' :
+          r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' :
+          r.statut.name() == 'HONOREE' ? 'badge-primary' :
+          'badge-danger'}">
+        <h:outputText value="#{r.statut.name() == 'CONFIRMEE' ? 'CONFIRMÉE' :
+                               r.statut.name() == 'EN_ATTENTE' ? 'EN ATTENTE' :
+                               r.statut.name() == 'HONOREE' ? 'HONORÉE' :
+                               'ANNULÉE'}"/>
+    </span>
                         </td>
 
                         <td>
@@ -218,6 +225,13 @@
                                                      title="Annuler">
                                         <f:passThroughAttribute name="value" value="Annuler"/>
                                     </h:commandButton>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{r.statut.name() == 'CONFIRMEE'}">
+                                    <h:commandButton value="Client arrivé"
+                                                     action="#{reservationBean.honorer(r)}"
+                                                     styleClass="btn btn-success btn-sm"
+                                                     onclick="return confirm('Marquer le client comme arrivé ?')"/>
                                 </ui:fragment>
 
                             </h:form>
@@ -316,6 +330,7 @@
                                              action="#{reservationBean.sauvegarder}"
                                              styleClass="btn btn-primary"
                                              onclick="syncDateHeure()"/>
+
                         </div>
 
                     </h:form>

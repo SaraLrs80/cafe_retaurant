@@ -104,9 +104,7 @@ public class ReservationBean implements Serializable {
         selectedReservation = r;
         selectedDateStr  = r.getDateReservation()  != null ? r.getDateReservation().toString()  : "";
         selectedHeureStr = r.getHeureReservation() != null ? r.getHeureReservation().toString() : "";
-        // findAll en mode édition pour afficher la table/client actuellement
-        // sélectionnés même s'ils ne sont plus "disponibles" (Manar)
-        tablesDisponibles = tableDAO.findAll();
+        tablesDisponibles = tableDAO.findAll(); // toutes les tables en mode édition
         clients           = utilisateurDAO.findByRole(Role.CLIENT);
         modeEdition = true;
         showForm    = true;
@@ -114,7 +112,7 @@ public class ReservationBean implements Serializable {
     }
 
     public String sauvegarder() {
-        // Recharger avant validation JSF (Manar)
+        // Recharger pour validation JSF
         tablesDisponibles = tableDAO.findAll();
         clients           = utilisateurDAO.findByRole(Role.CLIENT);
         try {
@@ -124,9 +122,9 @@ public class ReservationBean implements Serializable {
                 selectedReservation.setHeureReservation(LocalTime.parse(selectedHeureStr));
 
             if (modeEdition) {
-                reservationDAO.update(selectedReservation);
+                reservationDAO.update(selectedReservation); // update() gère le statut table
             } else {
-                reservationDAO.save(selectedReservation);
+                reservationDAO.save(selectedReservation);   // CORRIGÉ : save() gère aussi le statut table
             }
             showForm = false;
             charger();
@@ -138,20 +136,38 @@ public class ReservationBean implements Serializable {
 
     public String confirmer(Reservation r) {
         r.setStatut(StatutReservation.CONFIRMEE);
-        reservationDAO.update(r);
+        reservationDAO.update(r); // → met la table en RESERVEE
         charger();
         return null;
     }
 
     public String annuler(Reservation r) {
         r.setStatut(StatutReservation.ANNULEE);
-        reservationDAO.update(r);
+        reservationDAO.update(r); // → remet la table en DISPONIBLE si plus aucune résa active
         charger();
         return null;
     }
 
+    /**
+     * CORRIGÉ : honorer() prend directement l'objet Reservation (pas l'id)
+     * pour éviter la référence à 'r' invalide depuis le modal.
+     * Met le statut HONOREE → ReservationDAO.update() met la table en OCCUPEE.
+     */
+    public void honorer(Reservation r) {
+        r.setStatut(StatutReservation.HONOREE);
+        reservationDAO.update(r); // → met la table en OCCUPEE
+        charger();
+    }
+
     public String fermerForm() {
         showForm = false;
+        return null;
+    }
+
+    public String reinitialiserFiltres() {
+        filtreDateStr = "";
+        filtreStatut = "";
+        charger();
         return null;
     }
 

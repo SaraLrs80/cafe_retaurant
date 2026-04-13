@@ -26,6 +26,9 @@ public class TableRestaurant implements Serializable {
 
     @Column(name = "emplacement")
     private String emplacement;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active = true;
     // ── equals/hashCode sur idTable — indispensable pour JSF selectOneMenu ───
     @Override
     public boolean equals(Object o) {
@@ -54,6 +57,15 @@ public class TableRestaurant implements Serializable {
 
     public String getEmplacement()        { return emplacement; }
     public void setEmplacement(String v)  { this.emplacement = v; }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "TableRestaurant{" +

@@ -51,8 +51,9 @@ public class CommandeBean implements Serializable {
     }
 
     /**
-     * Avance le statut de la commande au suivant :
-     * EN_ATTENTE → EN_COURS → SERVIE → PAYEE
+     * CORRIGÉ : avance le statut EN_ATTENTE → EN_COURS → SERVIE → PAYEE.
+     * CommandeDAO.update() gère déjà la libération de la table quand SERVIE/PAYEE/ANNULEE.
+     * On recharge la liste après chaque changement.
      */
     public String avancerStatut(Commande c) {
         StatutCommande actuel = c.getStatut();
@@ -60,17 +61,20 @@ public class CommandeBean implements Serializable {
             case EN_ATTENTE -> StatutCommande.EN_COURS;
             case EN_COURS   -> StatutCommande.SERVIE;
             case SERVIE     -> StatutCommande.PAYEE;
-            default         -> actuel;
+            default         -> actuel; // PAYEE et ANNULEE ne bougent plus
         };
-        c.setStatut(suivant);
-        dao.update(c);
-        charger();
+
+        if (suivant != actuel) {   // ← CORRIGÉ : n'appelle update() que si le statut change vraiment
+            c.setStatut(suivant);
+            dao.update(c);
+            charger(); // recharge la liste depuis la base après la mise à jour
+        }
         return null;
     }
 
     public String annulerCommande(Commande c) {
         c.setStatut(StatutCommande.ANNULEE);
-        dao.update(c);
+        dao.update(c);  // CommandeDAO.update() libère la table si SUR_PLACE
         charger();
         return null;
     }
