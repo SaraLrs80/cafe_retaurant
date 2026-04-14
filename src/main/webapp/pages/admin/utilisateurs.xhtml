@@ -30,10 +30,10 @@
         <div class="card" style="margin-bottom:20px;">
             <div style="padding:14px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                 <h:form style="display:flex;gap:12px;align-items:center;flex:1;">
-                    <input type="text" placeholder="Rechercher par nom ou email..."
-                           style="flex:1;padding:8px 14px;border:1.5px solid var(--border);
-                                  border-radius:8px;font-family:'Inter',sans-serif;
-                                  font-size:.85rem;outline:none;background:var(--cream);"/>
+                    <h:inputText value="#{utilisateurBean.filtreNom}"
+                                 pt:placeholder="Rechercher par nom ou email..."
+                                 xmlns:pt="jakarta.faces.passthrough"
+                                 style="flex:1;padding:8px 14px;..."/>
                     <h:selectOneMenu styleClass="jsf-select"
                                      style="padding:8px 14px;border:1.5px solid var(--border);
                                             border-radius:8px;font-family:'Inter',sans-serif;
@@ -44,8 +44,14 @@
                         <f:selectItem itemValue="SERVEUR" itemLabel="Serveur"/>
                         <f:selectItem itemValue="CLIENT"  itemLabel="Client"/>
                     </h:selectOneMenu>
-                    <h:commandButton value="Filtrer" action="#{utilisateurBean.filtrer}"
+
+                    <h:commandButton value="Filtrer"
+                                     action="#{utilisateurBean.filtrer}"
                                      styleClass="btn btn-secondary"/>
+                    <h:commandButton value="✕ Réinitialiser"
+                                     action="#{utilisateurBean.reinitialiser}"
+                                     styleClass="btn btn-secondary"
+                                     immediate="true"/>
                 </h:form>
             </div>
         </div>

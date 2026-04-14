@@ -50,6 +50,24 @@ public class UtilisateurDAO {
         }
     }
 
+    public List<Utilisateur> findByNomOuEmail(String recherche, Role role) {
+        EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            String jpql = "SELECT u FROM Utilisateur u WHERE " +
+                    "(LOWER(u.nom) LIKE LOWER(:r) OR LOWER(u.prenom) LIKE LOWER(:r) OR LOWER(u.email) LIKE LOWER(:r))";
+
+            if (role != null) jpql += " AND u.role = :role";
+            jpql += " ORDER BY u.nom";
+
+            TypedQuery<Utilisateur> q = em.createQuery(jpql, Utilisateur.class);
+            q.setParameter("r", "%" + recherche + "%");
+            if (role != null) q.setParameter("role", role);
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     public void save(Utilisateur utilisateur) {
         EntityManager em = HibernateUtil.getEntityManagerFactory().createEntityManager();
         try {

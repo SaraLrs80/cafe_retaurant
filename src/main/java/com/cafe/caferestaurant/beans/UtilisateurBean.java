@@ -31,14 +31,25 @@ public class UtilisateurBean implements Serializable {
     }
 
     private void charger() {
-        if (filtreRole == null || filtreRole.isEmpty()) {
-            utilisateurs = dao.findAll();
+        Role role = (filtreRole == null || filtreRole.isEmpty()) ? null : Role.valueOf(filtreRole);
+
+        if (filtreNom != null && !filtreNom.trim().isEmpty()) {
+            utilisateurs = dao.findByNomOuEmail(filtreNom.trim(), role);
+        } else if (role != null) {
+            utilisateurs = dao.findByRole(role);
         } else {
-            utilisateurs = dao.findByRole(Role.valueOf(filtreRole));
+            utilisateurs = dao.findAll();
         }
     }
 
     public String filtrer() {
+        charger();
+        return null;
+    }
+
+    public String reinitialiser() {
+        filtreNom = "";
+        filtreRole = "";
         charger();
         return null;
     }
@@ -89,6 +100,11 @@ public class UtilisateurBean implements Serializable {
         return null;
     }
 
+    private String filtreNom = "";
+
+    // getter/setter
+    public String getFiltreNom()        { return filtreNom; }
+    public void   setFiltreNom(String v){ this.filtreNom = v; }
     // ── Getters / Setters ────────────────────────────────────────────────────
     public List<Utilisateur> getUtilisateurs()          { return utilisateurs; }
     public Utilisateur       getSelectedUser()           { return selectedUser; }

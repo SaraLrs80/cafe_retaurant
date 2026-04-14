@@ -36,8 +36,9 @@
                                      style="padding:8px 14px;border:1.5px solid var(--border);
                                             border-radius:8px;font-size:.85rem;outline:none;">
                         <f:selectItem itemValue=""           itemLabel="Tous les statuts"/>
-                        <f:selectItem itemValue="CONFIRMEE"  itemLabel="Confirmée"/>
                         <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente"/>
+                        <f:selectItem itemValue="CONFIRMEE"  itemLabel="Confirmée"/>
+                        <f:selectItem itemValue="HONOREE"    itemLabel="Honorée"/>
                         <f:selectItem itemValue="ANNULEE"    itemLabel="Annulée"/>
                     </h:selectOneMenu>
                     <h:commandButton value="Filtrer"       action="#{reservationBean.filtrer}"          styleClass="btn btn-secondary"/>
@@ -94,26 +95,33 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge
-                                #{r.statut.name() == 'CONFIRMEE'  ? 'badge-success' :
-                                  r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' : 'badge-danger'}">
-                                <h:outputText value="#{r.statut.name() == 'CONFIRMEE'  ? 'Confirmée' :
-                                                       r.statut.name() == 'EN_ATTENTE' ? 'En attente' : 'Annulée'}"/>
-                            </span>
+    <span class="badge
+        #{r.statut.name() == 'CONFIRMEE' ? 'badge-success' :
+          r.statut.name() == 'EN_ATTENTE' ? 'badge-warning' :
+          r.statut.name() == 'HONOREE' ? 'badge-primary' :
+          'badge-danger'}">
+        <h:outputText value="#{r.statut.name() == 'CONFIRMEE' ? 'Confirmée' :
+                               r.statut.name() == 'EN_ATTENTE' ? 'En attente' :
+                               r.statut.name() == 'HONOREE' ? 'Honorée' :
+                               'Annulée'}"/>
+    </span>
                         </td>
                         <td>
                             <h:form style="display:flex;gap:6px;flex-wrap:wrap;">
+
                                 <ui:fragment rendered="#{r.statut.name() == 'EN_ATTENTE'}">
                                     <h:commandButton value="Confirmer"
                                                      action="#{reservationBean.confirmer(r)}"
                                                      styleClass="btn btn-success btn-sm"/>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{r.statut.name() != 'ANNULEE'}">
+
+                                <ui:fragment rendered="#{r.statut.name() == 'EN_ATTENTE' or r.statut.name() == 'CONFIRMEE'}">
                                     <h:commandButton value="Annuler"
                                                      action="#{reservationBean.annuler(r)}"
                                                      styleClass="btn btn-danger btn-sm"
                                                      onclick="return confirm('Annuler cette réservation ?')"/>
                                 </ui:fragment>
+
                             </h:form>
                         </td>
                     </tr>
