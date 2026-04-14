@@ -119,6 +119,12 @@
                                          required="true"/>
                         </div>
                         <div style="margin-bottom:14px;">
+                            <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">URL de l'image</label>
+                            <h:inputText value="#{menuBean.selectedPlat.imageUrl}"
+                                         placeholder="/images/plats/tajine-poulet.jpg ou https://..."
+                                         style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;"/>
+                        </div>
+                        <div style="margin-bottom:14px;">
                             <label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:5px;">Description</label>
                             <h:inputTextarea value="#{menuBean.selectedPlat.description}" rows="3"
                                              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;outline:none;resize:vertical;"/>
